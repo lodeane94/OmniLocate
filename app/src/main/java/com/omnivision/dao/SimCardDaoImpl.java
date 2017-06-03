@@ -49,12 +49,12 @@ public class SimCardDaoImpl implements ISimCardDao {
     }
 
     @Override
-    public void update(SimCard phone) {
-
+    public void update(SimCard simCard) {
+        this.simCardDao.update(simCard);
     }
 
     @Override
-    public void delete(SimCard phone) {
-
+    public void delete(SimCard simCard) {
+        this.simCardDao.delete(simCard);
     }
 }

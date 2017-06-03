@@ -17,8 +17,8 @@ public interface ISimCard {
     String getAreaCode();
     void setPhone(Phone phone);
     Phone getPhone(Phone phone);
-    void setSmsCost(float smsCost);
-    float getSmsCost();
+    void setSmsCost(double smsCost);
+    double getSmsCost();
     void setSimNetworkId(Long simNetworkId);
     Long getSimNetworkId();
 }

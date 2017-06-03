@@ -9,11 +9,11 @@ import java.util.List;
  */
 
 public interface ISimCardDao {
-    void insert(SimCard phone);
+    void insert(SimCard simCard);
     List<SimCard> findAll();
     List<SimCard> findAllByOwnerId(Long ownerId);
     SimCard findByValue(String value);
     SimCard find(Long id);
-    void update(SimCard phone);
-    void delete(SimCard phone);
+    void update(SimCard simCard);
+    void delete(SimCard simCard);
 }

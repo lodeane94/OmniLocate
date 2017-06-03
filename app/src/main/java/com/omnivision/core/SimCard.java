@@ -27,7 +27,7 @@ public class SimCard implements ISimCard {
     private List<PrepaidCredit> prepaidCredit;
     private String number;
     private String areaCode;
-    private float smsCost;
+    private double smsCost;
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
@@ -39,8 +39,7 @@ public class SimCard implements ISimCard {
     @Generated(hash = 1159325565)
     private transient Long simNetwork__resolvedKey;
 
-    public SimCard(long id, long phoneId, String number, String areaCode, float smsCost,long simNetworkId) {
-        this.id = id;
+    public SimCard(long phoneId, String number, String areaCode, double smsCost,long simNetworkId) {
         this.phoneId = phoneId;
         this.number = number;
         this.areaCode = areaCode;
@@ -48,7 +47,7 @@ public class SimCard implements ISimCard {
         this.simNetworkId = simNetworkId;
     }
 
-    @Generated(hash = 1899259610)
+    @Generated
     public SimCard(long id, long phoneId, Long simNetworkId, String number, String areaCode, float smsCost) {
         this.id = id;
         this.phoneId = phoneId;
@@ -121,12 +120,12 @@ public class SimCard implements ISimCard {
     }
 
     @Override
-    public void setSmsCost(float smsCost) {
+    public void setSmsCost(double smsCost) {
         this.smsCost = smsCost;
     }
 
     @Override
-    public float getSmsCost() {
+    public double getSmsCost() {
         return this.smsCost;
     }
 

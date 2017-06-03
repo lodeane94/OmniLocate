@@ -1,12 +1,8 @@
 package com.omnivision.dao;
 
-import android.content.Context;
-
 import com.omnivision.core.DaoSession;
 import com.omnivision.core.PrepaidCredit;
 import com.omnivision.core.PrepaidCreditDao;
-import com.omnivision.core.UserDao;
-import com.tablayoutexample.lkelly.omnivision.OmniLocateApplication;
 
 import org.greenrobot.greendao.query.QueryBuilder;
 

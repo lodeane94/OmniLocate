@@ -19,9 +19,15 @@ import com.omnivision.core.Country;
 import com.omnivision.core.DaoSession;
 import com.omnivision.core.PartnerDevice;
 import com.omnivision.core.Phone;
+import com.omnivision.core.SimCard;
+import com.omnivision.core.SimNetwork;
 import com.omnivision.core.User;
 import com.omnivision.core.UserDao;
+import com.omnivision.dao.ISimCardDao;
+import com.omnivision.dao.ISimNetworkDao;
 import com.omnivision.dao.JSONHelper;
+import com.omnivision.dao.SimCardDaoImpl;
+import com.omnivision.dao.SimNetworkDaoImpl;
 import com.omnivision.utilities.PartnerDevicesAdapter;
 import com.omnivision.utilities.PhoneManager;
 
@@ -44,20 +50,29 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
     private EditText partnerDeviceNumEt;
     private Spinner countrySpinner;
     private Spinner noOfPartnerDevices;
-    private Spinner simNetworkProvider;
+    private Spinner simNetworkProviderSpinner;
     private ListView partner_devices_lv;
 
-    ArrayList<Country> countries = new ArrayList();//used to initialize country spinner//TODO change country enum in class diagram to a actual class (visio)
-    final List<PartnerDevice> partnerDevicesCellNumbers = new ArrayList<PartnerDevice>();//used to hold list of partner devices
+    private ArrayList<Country> countries = new ArrayList();//used to initialize country spinner//TODO change country enum in class diagram to a actual class (visio)
+    private final List<PartnerDevice> partnerDevicesCellNumbers = new ArrayList<PartnerDevice>();//used to hold list of partner devices
 
     private int noOfPartnerDevice;
     private Long partnerDevicesAddedCount = new Long(0);//used to enforce the max amt of partner devices a user can enter
+
+    private DaoSession daoSession;
+    private ISimNetworkDao simNetworkDao;
+    private ISimCardDao simCardDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG,"device registration activity started");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_registration);
+
+        daoSession = OmniLocateApplication.getSession(this);
+        simCardDao = new SimCardDaoImpl(daoSession);
+        simNetworkDao = new SimNetworkDaoImpl(daoSession);
+
         //activity view initialization
         initializeCountrySpinner();
         addListenerContinueRegBtn();//listener for the continue registration button
@@ -133,7 +148,29 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
         }
     }
 
- //   private void initialize
+    private void initializeSimNetworkProviderSpinner(){
+        try {
+            simNetworkProviderSpinner = (Spinner) findViewById(R.id.simNetworkProvider);
+            List<String> simNetworkProviderNames = new ArrayList<>();
+            List<SimNetwork> simNetworks = simNetworkDao.findAll();
+
+            for(SimNetwork network : simNetworks){
+                simNetworkProviderNames.add(network.getNetworkProvider());
+            }
+
+            if(simNetworkProviderNames != null && simNetworkProviderNames.size() > 0) {
+                ArrayAdapter<String> simNetworkProviderDataAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, simNetworkProviderNames);
+                simNetworkProviderDataAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+                simNetworkProviderSpinner.setAdapter(simNetworkProviderDataAdapter);
+            }else
+                throw new Exception("No sim network provider found");
+
+            }catch (Exception ex){
+            Log.d(TAG,"Error occurred while initializing sim network provider spinner \n ex: "+ex.getLocalizedMessage());
+            Toast.makeText(this,ex.getLocalizedMessage(),Toast.LENGTH_LONG);
+            ex.printStackTrace();
+        }
+    }
 
     private void addListenerContinueRegBtn() {
         /*referencing widgets from activity_device_registration.xml file*/
@@ -141,7 +178,8 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
         emailEt = (EditText) findViewById(R.id.emailEditText);
         passwordEt = (EditText) findViewById(R.id.passwordEditText);
         cellNumEt = (EditText) findViewById(R.id.cellNumberText);
-        countrySpinner = (Spinner) findViewById(R.id.countrySpinner);
+        //countrySpinner = (Spinner) findViewById(R.id.countrySpinner);
+        //simNetworkProvider = (Spinner) findViewById(R.id.simNetworkProvider);
         noOfPartnerDevices = (Spinner) findViewById(R.id.noOfPartnerDevicesSpinner);
     }
 
@@ -156,19 +194,24 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
                     .substring(1,10));
             String cellNum = cellNumEt.getText().toString();
             String selectedCountry = countrySpinner.getSelectedItem().toString();
+            String selectedSimNetworkProvider = simNetworkProviderSpinner.getSelectedItem().toString();
 
             Phone phone = new Phone(phoneId,cellNum,selectedCountry, Constants.DeviceStatus.NOT_STOLEN.toString(),partnerDevicesCellNumbers);//partner devices number not set here
             User user = new User(emailEt.getText().toString(),passwordEt.getText().toString(),phone);//TODO hash password in database
-            //persisting user to the omnisecurity database.
+            SimCard simCard = new SimCard(phoneId,cellNum, cellNum.substring(0,2),0.00,simNetworkDao.findByValue(selectedSimNetworkProvider).getId());
+            //persisting user to the omnilocate database.
             Log.i(TAG,"persisting user to the omnisecurity database");
             UserDao userDao = daoSession.getUserDao();
             userDao.insert(user);
             phone.setUserId(userDao.getKey(user));
-            daoSession.insert(phone);
+            daoSession.insert(phone);//TODO create phoneDAO and replace
+            simCardDao.insert(simCard);
 
             //persist userId and generated phone if to the device
             PhoneManager phoneManager = new PhoneManager(this);
-            phoneManager.registerDevice(phoneId.toString(),userDao.getKey(user).toString());
+            phoneManager.registerDevice(phoneId.toString()
+                    ,userDao.getKey(user).toString()
+                    ,String.valueOf(simCardDao.findByValue(cellNum).getId()));
 
             Log.i(TAG,"User ID = "+user.getId() + " + " + "Phone ID " + phone.getId() +" added successfully");
             Toast.makeText(this,"User Successfully Registered",Toast.LENGTH_LONG);
