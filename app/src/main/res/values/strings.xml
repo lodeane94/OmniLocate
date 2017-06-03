@@ -1,0 +1,53 @@
+<resources>
+    <string name="app_name">OmniVision</string>
+    <string name="settings">Settings</string>
+    <string name="add_new">Add New</string>
+    <string name="logo_name">OmniLocate</string>
+    <string name="email_text_hint">Email</string>
+    <string name="password_text_hint">Password</string>
+    <string name="cell_number_hint">Phone Number</string>
+    <string name="continue_button_text">Continue</string>
+    <string name="login_text">Login</string>
+    <string name="forgot_me_text">I forgot my username or password</string>
+    <string name="register_device">Register Your Device</string>
+    <string name="registration_heading">Registration</string>
+    <string name="finish_registration_text">Finish Registration</string>
+    <string name="country_prompt_spnr">Select Country</string>
+    <string name="sim_network_operator_prompt">Select Network Operator</string>
+    <string name="no_of_partner_devices_prompt_spnr">Number Of Partner Devices</string>
+    <string name="enter_partner_devices_nums">Enter Partner Devices Numbers</string>
+    <string name="enter_partner_device_hint">Partner Device Number</string>
+    <string name="add_partner_device_text">Add Number</string>
+    <string name="accessibility_config_description">This service records pop ups sent by your mobile operator, and saves them in the App. It is absolutely safe to use.</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="history_title">History</string>
+    <string name="date_added">Date Added</string>
+    <string name="is_credit_used">Credit Used ?</string>
+    <string name="added_by">Added By</string>
+    <string name="delete_credit">Delete</string>
+    <string name="call">call</string>
+    <string name="prompt_credit">Enter Voucher Number :</string>
+    <string name="log_out">Log Out</string>
+    <string name="remove">Remove Item</string>
+    <string name="alert_dialog_message_remove_credit">Do you want to remove ?</string>
+    <string name="alert_dialog_message_add_credit">Enter USSD code and Voucher Number eg.(*121*xxxxx..# :</string>
+    <string name="alert_dialog_yes">Yes</string>
+    <string name="alert_dialog_no">No</string>
+    <string name="alert_dialog_cancel">Cancel</string>
+    <string name="alert_dialog_add">Add</string>
+    <string-array name="no_of_partner_devices">
+        <item>Number Of Partner Devices</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+    <string-array name="app_drawer_titles">
+        <item>Home</item>
+        <item>Partner Devices</item>
+        <item>Prepaid Credits</item>
+        <item>Command History</item>
+        <item>Device Wipe</item>
+    </string-array>
+
+</resources>

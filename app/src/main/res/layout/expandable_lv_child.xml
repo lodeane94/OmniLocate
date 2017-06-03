@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorAccent"
+    android:id="@+id/main_child_lv_layout_rl">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:id="@+id/child_lv_layout_rl">
+
+        <TextView
+            android:id="@+id/added_by_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/added_by"
+            style="@style/defaultChildListViewItem"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            />
+
+        <TextView
+            android:id="@+id/added_by_result_tv"
+            style="@style/defaultChildListViewItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_toRightOf="@+id/added_by_tv"
+            android:layout_toEndOf="@+id/added_by_tv"
+            android:gravity="end"
+            />
+
+        <TextView
+            android:id="@+id/is_credit_used_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/is_credit_used"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/added_by_tv"
+            android:layout_marginTop="20dp"/>
+
+        <TextView
+            android:id="@+id/is_credit_used_result_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/added_by_result_tv"
+            android:layout_marginTop="20dp"
+            android:layout_toRightOf="@+id/is_credit_used_tv"
+            android:layout_toEndOf="@+id/is_credit_used_tv"
+            android:gravity="end"/>
+
+        <TextView
+            android:id="@+id/date_added_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/date_added"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/is_credit_used_tv"
+            android:layout_marginTop="20dp"/>
+
+        <TextView
+            android:id="@+id/date_added_result_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/is_credit_used_result_tv"
+            android:layout_marginTop="20dp"
+            android:layout_toRightOf="@+id/date_added_tv"
+            android:layout_toEndOf="@+id/date_added_tv"
+            android:gravity="end"/>
+    </RelativeLayout>
+  <!--  <LinearLayout
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/child_lv_layout_rl"
+        android:id="@+id/child_lv_layout_ll">
+
+        <Button
+            android:id="@+id/delete_credit_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/delete_credit"
+            style="@style/defaultButtonStyle"/>
+    </LinearLayout>-->
+</RelativeLayout>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/settings_action"
+        android:icon="@drawable/ic_action_settings"
+        android:title="@string/settings"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/call_action"
+        android:icon="@drawable/ic_action_call"
+        android:title="@string/call"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/remove_action"
+        android:icon="@drawable/ic_action_remove"
+        android:title="@string/remove"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/new_action"
+        android:icon="@drawable/ic_action_new"
+        android:title="@string/add_new"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/log_out_action"
+        android:title="@string/log_out"
+        app:showAsAction="never" />
+</menu>
