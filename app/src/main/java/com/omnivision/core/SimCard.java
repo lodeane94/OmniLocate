@@ -47,8 +47,8 @@ public class SimCard implements ISimCard {
         this.simNetworkId = simNetworkId;
     }
 
-    @Generated
-    public SimCard(long id, long phoneId, Long simNetworkId, String number, String areaCode, float smsCost) {
+    @Generated(hash = 463051398)
+    public SimCard(long id, long phoneId, Long simNetworkId, String number, String areaCode, double smsCost) {
         this.id = id;
         this.phoneId = phoneId;
         this.simNetworkId = simNetworkId;

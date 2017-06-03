@@ -15,9 +15,9 @@ public class SimNetwork {
     private String networkProvider;
     private String country;
 
-    public SimNetwork(Long id, String networkProvider, String command, String ussdCode) {
-        this.id = id;
+    public SimNetwork(String networkProvider,String country) {
         this.networkProvider = networkProvider;
+        this.country = country;
     }
 
     @Generated(hash = 1182667396)

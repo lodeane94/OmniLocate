@@ -38,9 +38,10 @@ public class SimNetworkDaoImpl implements ISimNetworkDao {
     }
 
     @Override
-    public SimNetwork findByValue(String value) {
+    public SimNetwork findByValue(String networkProviderName,String country) {
         QueryBuilder<SimNetwork> queryBuilder = simNetworkDao.queryBuilder();
-        queryBuilder.where(SimNetworkDao.Properties.NetworkProvider.eq(value));
+        queryBuilder.where(SimNetworkDao.Properties.NetworkProvider.eq(networkProviderName)
+                ,SimNetworkDao.Properties.Country.eq(country));
         return queryBuilder.unique();
     }
 
@@ -57,5 +58,10 @@ public class SimNetworkDaoImpl implements ISimNetworkDao {
     @Override
     public void delete(SimNetwork simNetwork) {
         this.simNetworkDao.delete(simNetwork);
+    }
+
+    @Override
+    public void deleteAll() {
+        this.simNetworkDao.deleteAll();
     }
 }

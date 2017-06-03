@@ -75,6 +75,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
 
         //activity view initialization
         initializeCountrySpinner();
+        initializeSimNetworkProviderSpinner();
         addListenerContinueRegBtn();//listener for the continue registration button
 
         continueRegistrationBtn.setOnClickListener(new View.OnClickListener(){
@@ -144,12 +145,20 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
             countriesDataAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
             countrySpinner.setAdapter(countriesDataAdapter);
         } catch (JSONException e) {
+            String errMessage = "Error occurred while initializing country spinner";
+            Log.d(TAG,errMessage+"\n ex: "+e.getLocalizedMessage());
+            Toast.makeText(this,errMessage,Toast.LENGTH_LONG);
             e.printStackTrace();
         }
     }
 
     private void initializeSimNetworkProviderSpinner(){
         try {
+            //testing creating example simnetworkprover
+            simNetworkDao.deleteAll();
+            SimNetwork simNetwork = new SimNetwork("Digicel","China");
+            simNetworkDao.insert(simNetwork);
+
             simNetworkProviderSpinner = (Spinner) findViewById(R.id.simNetworkProvider);
             List<String> simNetworkProviderNames = new ArrayList<>();
             List<SimNetwork> simNetworks = simNetworkDao.findAll();
@@ -166,8 +175,9 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
                 throw new Exception("No sim network provider found");
 
             }catch (Exception ex){
-            Log.d(TAG,"Error occurred while initializing sim network provider spinner \n ex: "+ex.getLocalizedMessage());
-            Toast.makeText(this,ex.getLocalizedMessage(),Toast.LENGTH_LONG);
+            String errMessage = "Error occurred while initializing sim network provider spinner";
+            Log.d(TAG,errMessage+"\n ex: "+ex.getLocalizedMessage());
+            Toast.makeText(this,errMessage,Toast.LENGTH_LONG);
             ex.printStackTrace();
         }
     }
@@ -181,6 +191,8 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
         //countrySpinner = (Spinner) findViewById(R.id.countrySpinner);
         //simNetworkProvider = (Spinner) findViewById(R.id.simNetworkProvider);
         noOfPartnerDevices = (Spinner) findViewById(R.id.noOfPartnerDevicesSpinner);
+        noOfPartnerDevices.setSelection(0);
+        noOfPartnerDevices.setSelected(true);
     }
 
     private void setUserInformation() {
@@ -198,8 +210,9 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
 
             Phone phone = new Phone(phoneId,cellNum,selectedCountry, Constants.DeviceStatus.NOT_STOLEN.toString(),partnerDevicesCellNumbers);//partner devices number not set here
             User user = new User(emailEt.getText().toString(),passwordEt.getText().toString(),phone);//TODO hash password in database
-            SimCard simCard = new SimCard(phoneId,cellNum, cellNum.substring(0,2),0.00,simNetworkDao.findByValue(selectedSimNetworkProvider).getId());
+            SimCard simCard = new SimCard(phoneId,cellNum, cellNum.substring(0,2),0.00,simNetworkDao.findByValue(selectedSimNetworkProvider,selectedCountry).getId());
             //persisting user to the omnilocate database.
+            //TODO validate user i.e. if user already exits give appropriate message and refer user to the remember me functionality
             Log.i(TAG,"persisting user to the omnisecurity database");
             UserDao userDao = daoSession.getUserDao();
             userDao.insert(user);
@@ -217,9 +230,9 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
             Toast.makeText(this,"User Successfully Registered",Toast.LENGTH_LONG);
 
             launchLoginActivity();
-        }catch (Exception sysEx){
-            Log.e(TAG,sysEx.getMessage());
-            sysEx.printStackTrace();
+        }catch (Exception Ex){
+            Log.e(TAG,Ex.getMessage());
+            Ex.printStackTrace();
             // TODO: 3/16/2017  highlight which input has failed validation
         }
 

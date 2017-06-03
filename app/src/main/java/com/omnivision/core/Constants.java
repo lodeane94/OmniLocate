@@ -110,6 +110,8 @@ public class Constants {
     public static final class PhoneManager {
         //sharedpref file name
         public static final String PREF_NAME = "OMNI_LOCATE_PHONE_PREF";
+        //determines if it is the first time the user is logging on to the device
+        public static final String LOGIN_COUNT_NUM = "LOGIN_COUNT_NUM";
     }
 
     //Identify the response given from an alert dialog

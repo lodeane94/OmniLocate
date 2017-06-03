@@ -62,4 +62,27 @@ public class PhoneManager {
         return userDetails;
     }
 
+    /**
+     * @author lkelly
+     * @desc sets the IS_INITIAL_SETUP parameter
+     * if value is greater than 1 then it is not inital
+     * @params
+     * @return newCount | int
+     * */
+    public int getLoginCountNum(){
+        Log.d(TAG,"getLoginCountNum : init");
+
+        int oldCount = pref.getInt(Constants.PhoneManager.LOGIN_COUNT_NUM,0);
+        int newCount = oldCount + 1;
+
+        editor.putInt(Constants.PhoneManager.LOGIN_COUNT_NUM,newCount);
+
+        //commit changes to the editor
+        editor.commit();
+        Log.d(TAG,"Count : "+newCount);
+        Log.d(TAG,"getLoginCountNum: exit");
+
+        return newCount;
+    }
+
 }

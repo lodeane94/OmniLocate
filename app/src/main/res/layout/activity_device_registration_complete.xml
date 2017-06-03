@@ -1,96 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_gradient">
 
+    <TextView
+        android:id="@+id/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="monospace"
+        android:text="@string/logo_name"
+        android:textColor="@color/white"
+        android:layout_centerHorizontal="true"
+        android:textSize="@dimen/activity_logo_text_size"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/activity_logo_margin_top"
+        android:layout_marginBottom="@dimen/activity_logo_margin_bottom"/>
+
     <RelativeLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/background_gradient"
-        android:padding="10dp">
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="monospace"
-            android:text="@string/logo_name"
-            android:textColor="@color/white"
-            android:textSize="30sp"
-            android:layout_alignParentTop="true"
-            android:layout_alignRight="@+id/partner_device_et"
-            android:layout_alignEnd="@+id/partner_device_et" />
+        android:layout_height="wrap_content"
+        android:id="@+id/registrationCompleteChildRL"
+        android:layout_below="@id/logo"
+        android:layout_marginLeft="@dimen/activity_registration_margin_left"
+        android:layout_marginRight="@dimen/activity_registration_margin_right"
+        android:layout_marginBottom="@dimen/activity_logo_margin_bottom">
 
         <TextView
             android:id="@+id/registration3_label_tv"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/registration_heading"
             android:textColor="@color/white"
-            android:textSize="19sp"
-            android:layout_above="@+id/partner_device_prompt"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginBottom="27dp" />
+            android:textSize="@dimen/activity_heading_text_size"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin" />
 
         <TextView
             android:id="@+id/partner_device_prompt"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
             tools:text="@string/enter_partner_devices_nums"
-            android:layout_above="@+id/partner_device_et"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginBottom="23dp" />
+            android:layout_below="@+id/registration3_label_tv"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin" />
 
         <EditText
             android:id="@+id/partner_device_et"
             style="@style/defaultEditTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
             android:hint="@string/enter_partner_device_hint"
             android:inputType="phone"
-            android:layout_above="@+id/add_partner_device_btn"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginBottom="23dp" />
+            android:layout_below="@+id/partner_device_prompt"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"/>
 
         <Button
             android:id="@+id/add_partner_device_btn"
             style="@style/defaultButtonStyle"
-            android:layout_width="280dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/add_partner_device_text"
-            android:padding="10dp"
-            android:layout_above="@+id/partner_devices_lv"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginBottom="41dp" />
+            android:layout_below="@+id/partner_device_et"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin" />
 
         <ListView
             android:id="@+id/partner_devices_lv"
-            android:layout_width="280dp"
+            android:layout_width="match_parent"
             android:layout_height="150dp"
             android:choiceMode="singleChoice"
-            android:background="@color/white"
+            android:background="@color/colorListViewDefault"
             android:divider="@android:color/darker_gray"
             android:dividerHeight="0.1dp"
-            android:layout_marginBottom="91dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentBottom="true"/>
+            android:layout_below="@+id/add_partner_device_btn"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin" />
     </RelativeLayout>
     <Button
         android:id="@+id/finish_registration_btn"
         style="@style/defaultButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="@string/finish_registration_text" />
+        android:text="@string/finish_registration_text"
+        android:layout_below="@+id/registrationCompleteChildRL"
+        android:layout_marginLeft="@dimen/activity_vertical_margin"
+        android:layout_marginRight="@dimen/activity_vertical_margin"/>
 </RelativeLayout>

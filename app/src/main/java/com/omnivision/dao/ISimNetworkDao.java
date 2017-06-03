@@ -13,8 +13,9 @@ public interface ISimNetworkDao {
     void insert(SimNetwork simNetwork);
     List<SimNetwork> findAll();
     List<SimNetwork> findAllByOwnerId(Long ownerId);
-    SimNetwork findByValue(String value);
+    SimNetwork findByValue(String networkProviderName,String country);
     SimNetwork find(Long id);
     void update(SimNetwork simNetwork);
     void delete(SimNetwork simNetwork);
+    void deleteAll();
 }

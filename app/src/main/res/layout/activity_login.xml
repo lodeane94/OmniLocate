@@ -8,86 +8,83 @@
         android:layout_height="wrap_content"
         android:id="@+id/logo"
         android:fontFamily="monospace"
-        android:textSize="33sp"
+        android:textSize="@dimen/activity_logo_text_size"
         android:textColor="#FFFFFF"
         android:text="@string/logo_name"
-        android:layout_marginTop="89dp"
-        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/activity_logo_margin_top"
+        android:layout_marginBottom="@dimen/activity_login_logo_horizontal_margin_bottom"
         android:layout_centerHorizontal="true" />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/loginChildRL"
+        android:layout_below="@+id/logo"
+        android:layout_marginLeft="@dimen/activity_login_vertical_margin"
+        android:layout_marginRight="@dimen/activity_login_vertical_margin"
+        android:layout_marginBottom="@dimen/activity_login_logo_horizontal_margin_bottom">
+
+        <TextView
+            android:id="@+id/login_heading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/login_heading"
+            android:textColor="@color/white"
+            android:textSize="@dimen/activity_heading_text_size"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            android:hint="@string/email_text_hint"
+            style="@style/defaultEditTextStyle"
+            android:id="@+id/emailEditText"
+            android:layout_below="@+id/login_heading"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:hint="@string/password_text_hint"
+            style="@style/defaultEditTextStyle"
+            android:id="@+id/passwordEditText"
+            android:layout_below="@+id/emailEditText"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"/>
+
+        <Button
+            android:text="@string/login_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/defaultButtonStyle"
+            android:id="@+id/loginBtn"
+            android:layout_below="@+id/passwordEditText"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"/>
+
+        <TextView
+            android:text="@string/forgot_me_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/disclaimerText"
+            android:id="@+id/forgotMeText"
+            android:layout_below="@+id/loginBtn"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:layout_alignParentRight="true" />
+    </RelativeLayout>
     <Button
         android:text="@string/register_device"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/defaultButtonStyle"
         android:id="@+id/registerDeviceBtn"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            style="@style/defaultTableStyle">
-
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:hint="@string/email_text_hint"
-                style="@style/defaultEditTextStyle"
-                android:id="@+id/emailEditText" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            style="@style/defaultTableStyle">
-
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:hint="@string/password_text_hint"
-                style="@style/defaultEditTextStyle"
-                android:id="@+id/passwordEditText" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            style="@style/defaultTableStyle">
-
-            <Button
-                android:text="@string/login_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="7dp"
-                style="@style/defaultButtonStyle"
-                android:id="@+id/loginBtn" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="right"
-            android:paddingTop="30dp">
-
-            <TextView
-                android:text="@string/forgot_me_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/disclaimerText"
-                android:id="@+id/forgotMeText" />
-        </TableRow>
-    </TableLayout>
+        android:layout_below="@+id/loginChildRL"
+        android:layout_marginLeft="@dimen/activity_vertical_margin"
+        android:layout_marginRight="@dimen/activity_vertical_margin"/>
 
 </RelativeLayout>

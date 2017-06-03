@@ -80,8 +80,13 @@ public class LoginActivity extends AppCompatActivity {
                         ,user.getEmail()
                         ,phoneManager.getPhoneDetails().get(Constants.SessionManager.PHONE_ID)
                         ,phoneManager.getPhoneDetails().get(Constants.SessionManager.SIM_ID));
-                //start main activity upon valid credentials
-                launchMainActivity();
+
+                //if it is a initial login then display the activity_login_initial_setup layout else start main activity
+                if(phoneManager.getLoginCountNum() > 1)//1 indicates initial login
+                    //start main activity upon valid credentials
+                    launchMainActivity();
+                else
+                    initiateInitialSetup();
             }else{
                 Toast.makeText(this,"Invalid email/password combination",Toast.LENGTH_LONG).show();
             }
@@ -90,6 +95,11 @@ public class LoginActivity extends AppCompatActivity {
             ex.printStackTrace();
         }
 
+    }
+
+    private void initiateInitialSetup() {
+        setContentView(R.layout.activity_login_initial_setup);
+        //TODO initialize layouts and widgets
     }
 
     /*

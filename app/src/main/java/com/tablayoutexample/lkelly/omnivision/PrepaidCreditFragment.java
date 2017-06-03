@@ -77,25 +77,31 @@ public class PrepaidCreditFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            context = getContext();
-            daoSession = OmniLocateApplication.getSession(context);//initializing dao session
-            //initializing session manager
-            sessionManager = new SessionManager(context);
-            //setting user details
-            userDetails = sessionManager.getUserDetails();
+            try {
+                context = getContext();
+                daoSession = OmniLocateApplication.getSession(context);//initializing dao session
+                //initializing session manager
+                sessionManager = new SessionManager(context);
+                //setting user details
+                userDetails = sessionManager.getUserDetails();
 
-            prepaidCreditDao = new PrepaidCreditDaoImpl(daoSession);
-            simcardDao = new SimCardDaoImpl(daoSession);
-            //retrieving all sim cards for phone
-            List<SimCard> simCards = simcardDao.findAllByOwnerId(Long.valueOf(userDetails.get(Constants.SessionManager.PHONE_ID)));
-            for(SimCard sim : simCards){
-                if(String.valueOf(sim.getId()) == userDetails.get(Constants.SessionManager.SIM_ID)){
-                    simCard = sim;
+                prepaidCreditDao = new PrepaidCreditDaoImpl(daoSession);
+                simcardDao = new SimCardDaoImpl(daoSession);
+                //retrieving all sim cards for phone
+                List<SimCard> simCards = simcardDao.findAllByOwnerId(Long.valueOf(userDetails.get(Constants.SessionManager.PHONE_ID)));
+                for (SimCard sim : simCards) {
+                    if (String.valueOf(sim.getId()).equals(userDetails.get(Constants.SessionManager.SIM_ID))) {
+                        simCard = sim;
+                    }
                 }
+                //throw exception if simcard is null at this point
+                if (simCard == null)
+                    throw new NullPointerException("Session is invalid: simcard value is null");
+            }catch (Exception ex){
+                String errMessage = "Error occurred while loading prepaid credits";
+                Log.e(TAG,errMessage + "\n"+ex.getLocalizedMessage());
+                Toast.makeText(context,errMessage,Toast.LENGTH_LONG);
             }
-            //throw exception if simcard is null at this point
-            if(simCard == null)
-                throw new NullPointerException("Session is invalid: simcard value is null");
             //PrepaidCreditDao p = daoSession.getPrepaidCreditDao();
            // p.deleteAll();
         }
@@ -268,7 +274,7 @@ public class PrepaidCreditFragment extends Fragment {
                             if(response != null){
                                 setVoucherNumber(response);
                                 Log.d(TAG,"voucher number : "+getVoucherNumber());
-                                PrepaidCredit prepaidCredit = new PrepaidCredit(response, userDetails.get(Constants.SessionManager.EMAIL), Long.valueOf(userDetails.get(Constants.SessionManager.PHONE_ID)), context);
+                                PrepaidCredit prepaidCredit = new PrepaidCredit(response, userDetails.get(Constants.SessionManager.EMAIL), Long.valueOf(userDetails.get(Constants.SessionManager.SIM_ID)), context);
                                 prepaidCreditDao.insert(prepaidCredit);
                                 refreshModel();
                                 loadPrepaidCreditInformation();
