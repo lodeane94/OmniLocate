@@ -27,6 +27,12 @@ public class SimNetworkCodes {
     @Generated(hash = 1159325565)
     private transient Long simNetwork__resolvedKey;
 
+    public SimNetworkCodes(Long simNetworkId, String command, String ussdCode) {
+        this.simNetworkId = simNetworkId;
+        this.command = command;
+        this.ussdCode = ussdCode;
+    }
+
     @Generated(hash = 380711465)
     public SimNetworkCodes(Long id, Long simNetworkId, String command, String ussdCode) {
         this.id = id;

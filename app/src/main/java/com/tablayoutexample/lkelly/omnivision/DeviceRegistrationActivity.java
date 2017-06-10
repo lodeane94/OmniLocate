@@ -175,11 +175,11 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
                 throw new Exception("No sim network provider found");
 
             }catch (Exception ex){
-            String errMessage = "Error occurred while initializing sim network provider spinner";
-            Log.d(TAG,errMessage+"\n ex: "+ex.getLocalizedMessage());
-            Toast.makeText(this,errMessage,Toast.LENGTH_LONG);
-            ex.printStackTrace();
-        }
+                String errMessage = "Error occurred while initializing sim network provider spinner";
+                Log.d(TAG,errMessage+"\n ex: "+ex.getLocalizedMessage());
+                Toast.makeText(this,errMessage,Toast.LENGTH_LONG);
+                ex.printStackTrace();
+            }
     }
 
     private void addListenerContinueRegBtn() {
@@ -208,9 +208,13 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
             String selectedCountry = countrySpinner.getSelectedItem().toString();
             String selectedSimNetworkProvider = simNetworkProviderSpinner.getSelectedItem().toString();
 
+            SimNetwork simNetwork = simNetworkDao.findByValue(selectedSimNetworkProvider,selectedCountry);
+            if(simNetwork == null)
+                throw new Exception(selectedSimNetworkProvider +" not available for usage in OmniLocate");
+
             Phone phone = new Phone(phoneId,cellNum,selectedCountry, Constants.DeviceStatus.NOT_STOLEN.toString(),partnerDevicesCellNumbers);//partner devices number not set here
             User user = new User(emailEt.getText().toString(),passwordEt.getText().toString(),phone);//TODO hash password in database
-            SimCard simCard = new SimCard(phoneId,cellNum, cellNum.substring(0,2),0.00,simNetworkDao.findByValue(selectedSimNetworkProvider,selectedCountry).getId());
+            SimCard simCard = new SimCard(phoneId,cellNum, cellNum.substring(0,3),0.00,simNetwork.getId());
             //persisting user to the omnilocate database.
             //TODO validate user i.e. if user already exits give appropriate message and refer user to the remember me functionality
             Log.i(TAG,"persisting user to the omnisecurity database");
@@ -224,13 +228,15 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
             PhoneManager phoneManager = new PhoneManager(this);
             phoneManager.registerDevice(phoneId.toString()
                     ,userDao.getKey(user).toString()
-                    ,String.valueOf(simCardDao.findByValue(cellNum).getId()));
+                    ,String.valueOf(simCardDao.find(simCard.getId())));
 
             Log.i(TAG,"User ID = "+user.getId() + " + " + "Phone ID " + phone.getId() +" added successfully");
             Toast.makeText(this,"User Successfully Registered",Toast.LENGTH_LONG);
 
             launchLoginActivity();
         }catch (Exception Ex){
+            String errMessage = "registration failed";
+            Toast.makeText(this,errMessage,Toast.LENGTH_LONG);
             Log.e(TAG,Ex.getMessage());
             Ex.printStackTrace();
             // TODO: 3/16/2017  highlight which input has failed validation

@@ -1,28 +1,53 @@
 package com.tablayoutexample.lkelly.omnivision;
 
 import android.content.Intent;
+import android.nfc.Tag;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import  android.util.Log;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.omnivision.core.Constants;
 import com.omnivision.core.DaoSession;
+import com.omnivision.core.SimCard;
+import com.omnivision.core.SimNetworkCodes;
 import com.omnivision.core.User;
 import com.omnivision.core.UserDao;
+import com.omnivision.dao.ISimCardDao;
+import com.omnivision.dao.ISimNetworkCodeDao;
+import com.omnivision.dao.ISimNetworkDao;
+import com.omnivision.dao.SimCardDaoImpl;
+import com.omnivision.dao.SimNetworkCodeDaoImpl;
+import com.omnivision.dao.SimNetworkDaoImpl;
 import com.omnivision.utilities.PhoneManager;
+import com.omnivision.utilities.SessionManager;
 
 import org.greenrobot.greendao.query.QueryBuilder;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class LoginActivity extends AppCompatActivity {
-    private static final String TAG = "omnisecurity.login" ;
-    Button registerDeviceBtn;
-    Button loginBtn;
-    EditText emailEt;
-    EditText passwordEt;
+    private static final String TAG = LoginActivity.class.getSimpleName() ;
+    private Button registerDeviceBtn;
+    private Button loginBtn;
+    private EditText emailEt;
+    private EditText passwordEt;
+    private EditText smsCostEt;
+    private Spinner ussdCommandSpnr;
+    private EditText ussdCommandCodeEt;
+    private Button getStartedBtn;
+    private Button addUssdCommandBtn;
+    private SessionManager sessionManager;
+    private DaoSession daoSession;
+
+    ArrayAdapter<String> simNetworkCodesDataAdapter;
+    ArrayList<String> simNetworkUssdCommandNames;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
         EditText passwordEt = (EditText)findViewById(R.id.passwordEditText);
 
         try{
-            DaoSession daoSession = OmniLocateApplication.getSession(LoginActivity.this);//initializing dao session
+            daoSession = OmniLocateApplication.getSession(LoginActivity.this);//initializing dao session
             String email = emailEt.getText().toString();
             String password = passwordEt.getText().toString();
 
@@ -74,7 +99,7 @@ public class LoginActivity extends AppCompatActivity {
             //userDao.deleteAll(); //TODO remove this comment
             if(user != null){
                 //create new session for user
-                com.omnivision.utilities.SessionManager sessionManager = new com.omnivision.utilities.SessionManager(this);
+                sessionManager = new SessionManager(this);
                 PhoneManager phoneManager = new PhoneManager(this);
                 sessionManager.createLoginSession(user.getId().toString()
                         ,user.getEmail()
@@ -82,10 +107,10 @@ public class LoginActivity extends AppCompatActivity {
                         ,phoneManager.getPhoneDetails().get(Constants.SessionManager.SIM_ID));
 
                 //if it is a initial login then display the activity_login_initial_setup layout else start main activity
-                if(phoneManager.getLoginCountNum() > 1)//1 indicates initial login
+              // TODO uncomment if(phoneManager.getLoginCountNum() > 1)//1 indicates initial login
                     //start main activity upon valid credentials
-                    launchMainActivity();
-                else
+             //       launchMainActivity();
+              //  else
                     initiateInitialSetup();
             }else{
                 Toast.makeText(this,"Invalid email/password combination",Toast.LENGTH_LONG).show();
@@ -99,7 +124,69 @@ public class LoginActivity extends AppCompatActivity {
 
     private void initiateInitialSetup() {
         setContentView(R.layout.activity_login_initial_setup);
-        //TODO initialize layouts and widgets
+        smsCostEt = (EditText) findViewById(R.id.sms_cost_et);
+        ussdCommandSpnr = (Spinner) findViewById(R.id.ussdCommandSpr);
+        ussdCommandCodeEt = (EditText) findViewById(R.id.ussd_command_et);
+        getStartedBtn = (Button) findViewById(R.id.get_started_btn);
+        addUssdCommandBtn = (Button) findViewById(R.id.add_ussd_command_btn);
+
+        simNetworkUssdCommandNames = new ArrayList<>();
+        //populating ussd command spinner
+        Collections.addAll(simNetworkUssdCommandNames, getResources().getStringArray(R.array.array_ussd_commands));
+        simNetworkCodesDataAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, simNetworkUssdCommandNames);
+        simNetworkCodesDataAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        ussdCommandSpnr.setAdapter(simNetworkCodesDataAdapter);
+
+
+        addUssdCommandBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addSimNetworkCode();
+            }
+        });
+
+        getStartedBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                continueLogin();
+            }
+        });
+    }
+
+    /**
+     * @author lkelly
+     * @desc validates that ussd commands are setup on the device before continuing to the main activity
+     * @params
+     * */
+    private void continueLogin() {
+        String notifMess = "Please add ussd codes for all items";
+        /*uses the data input for the spinner to identify if the ussd codes have all been added to the device*/
+        if(simNetworkUssdCommandNames != null && simNetworkUssdCommandNames.size() != 0)
+            Toast.makeText(this,notifMess,Toast.LENGTH_LONG);
+        else
+            launchMainActivity();
+    }
+
+    private void addSimNetworkCode() {
+        try {
+            ISimCardDao simCardDao = new SimCardDaoImpl(daoSession);
+            ISimNetworkCodeDao simCardNetworkCodeDao = new SimNetworkCodeDaoImpl(daoSession);
+            SimCard simCard = simCardDao.find(Long.parseLong(sessionManager.getUserDetails().get(Constants.SessionManager.SIM_ID)));
+
+            String selectedItem = ussdCommandSpnr.getSelectedItem().toString();
+            SimNetworkCodes simNetworkCodes = new SimNetworkCodes(simCard.getSimNetwork().getId()
+                    ,selectedItem , ussdCommandCodeEt.getText().toString());
+            simCardNetworkCodeDao.insert(simNetworkCodes);
+
+            simNetworkUssdCommandNames.remove(selectedItem);
+            simNetworkCodesDataAdapter.notifyDataSetChanged();
+            Toast.makeText(this,"Ussd Code added successfully",Toast.LENGTH_SHORT);
+        }catch (Exception ex){
+            String errMessage = "Error occurred while adding USSD code";
+            Log.e(TAG,errMessage +" \n"+ ex.getLocalizedMessage());
+            Toast.makeText(this,errMessage,Toast.LENGTH_LONG);
+            ex.printStackTrace();
+        }
     }
 
     /*
