@@ -65,7 +65,7 @@ public class SMSUtility {
      * @params intent
      * @return map containing sms that was send and the sender of the sms
    * */
-    public static Map extractCommandFromSMS(Intent intent) {
+    public static Map<String,String> extractCommandFromSMS(Intent intent) {
         Log.i(TAG,"extractCommandFromSMS:init");
 
         String smsBody = "";
@@ -81,8 +81,8 @@ public class SMSUtility {
             smsBody = smsMessage.getMessageBody();
             smsSender = smsMessage.getDisplayOriginatingAddress();
 
-            smsDetails.put(Constants.CommandDetails.COMMAND,smsBody);
-            smsDetails.put(Constants.CommandDetails.ORIGIN,smsSender);
+            smsDetails.put(Constants.CommandDetails.COMMAND.name(),smsBody);
+            smsDetails.put(Constants.CommandDetails.ORIGIN.name(),smsSender);
         }
 
         Log.i(TAG,"extractCommandFromSMS:exit");

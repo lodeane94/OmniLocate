@@ -2,6 +2,8 @@ package com.omnivision.dao;
 
 import com.omnivision.core.PrepaidCredit;
 
+import org.greenrobot.greendao.query.QueryBuilder;
+
 import java.util.List;
 
 /**
@@ -13,6 +15,7 @@ public interface IPrepaidCreditDao {
     List<PrepaidCredit> findAll();
     List<PrepaidCredit> findAllByOwnerId(Long ownerId);
     PrepaidCredit findByValue(String value);
+    QueryBuilder<PrepaidCredit> findByQuery();
     PrepaidCredit find(Long id);
     void update(PrepaidCredit prepaidCredit);
     void delete(PrepaidCredit prepaidCredit);

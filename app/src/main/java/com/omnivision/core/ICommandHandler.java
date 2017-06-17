@@ -6,5 +6,5 @@ package com.omnivision.core;
 
 public interface ICommandHandler {
    // void setCommand(String command);
-    //String getCommand();
+   //String getCommand(String cmd);
 }

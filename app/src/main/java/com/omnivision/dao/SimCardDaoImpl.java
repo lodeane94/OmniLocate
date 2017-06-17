@@ -57,4 +57,9 @@ public class SimCardDaoImpl implements ISimCardDao {
     public void delete(SimCard simCard) {
         this.simCardDao.delete(simCard);
     }
+
+    @Override
+    public void deleteAll() {
+        this.simCardDao.deleteAll();
+    }
 }

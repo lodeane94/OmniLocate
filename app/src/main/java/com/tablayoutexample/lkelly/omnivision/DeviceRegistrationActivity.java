@@ -147,7 +147,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
         } catch (JSONException e) {
             String errMessage = "Error occurred while initializing country spinner";
             Log.d(TAG,errMessage+"\n ex: "+e.getLocalizedMessage());
-            Toast.makeText(this,errMessage,Toast.LENGTH_LONG);
+            Toast.makeText(this,errMessage,Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
     }
@@ -177,7 +177,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
             }catch (Exception ex){
                 String errMessage = "Error occurred while initializing sim network provider spinner";
                 Log.d(TAG,errMessage+"\n ex: "+ex.getLocalizedMessage());
-                Toast.makeText(this,errMessage,Toast.LENGTH_LONG);
+                Toast.makeText(this,errMessage,Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
             }
     }
@@ -204,6 +204,8 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
             //TODO if user is already registered with no phone id, then regenerate this ID and map it back to the user
             Long phoneId = Long.parseLong(String.valueOf(System.currentTimeMillis())
                     .substring(1,10));
+            Long simId = Long.parseLong(String.valueOf(System.currentTimeMillis())
+                    .substring(1,10));
             String cellNum = cellNumEt.getText().toString();
             String selectedCountry = countrySpinner.getSelectedItem().toString();
             String selectedSimNetworkProvider = simNetworkProviderSpinner.getSelectedItem().toString();
@@ -214,7 +216,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
 
             Phone phone = new Phone(phoneId,cellNum,selectedCountry, Constants.DeviceStatus.NOT_STOLEN.toString(),partnerDevicesCellNumbers);//partner devices number not set here
             User user = new User(emailEt.getText().toString(),passwordEt.getText().toString(),phone);//TODO hash password in database
-            SimCard simCard = new SimCard(phoneId,cellNum, cellNum.substring(0,3),0.00,simNetwork.getId());
+            SimCard simCard = new SimCard(simId,phoneId,cellNum, cellNum.substring(0,3),0.00,simNetwork.getId());
             //persisting user to the omnilocate database.
             //TODO validate user i.e. if user already exits give appropriate message and refer user to the remember me functionality
             Log.i(TAG,"persisting user to the omnisecurity database");
@@ -222,21 +224,23 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
             userDao.insert(user);
             phone.setUserId(userDao.getKey(user));
             daoSession.insert(phone);//TODO create phoneDAO and replace
+
+            simCardDao.deleteAll();
             simCardDao.insert(simCard);
 
             //persist userId and generated phone if to the device
             PhoneManager phoneManager = new PhoneManager(this);
             phoneManager.registerDevice(phoneId.toString()
                     ,userDao.getKey(user).toString()
-                    ,String.valueOf(simCardDao.find(simCard.getId())));
+                    ,String.valueOf(simCard.getId()));
 
             Log.i(TAG,"User ID = "+user.getId() + " + " + "Phone ID " + phone.getId() +" added successfully");
-            Toast.makeText(this,"User Successfully Registered",Toast.LENGTH_LONG);
+            Toast.makeText(this,"User Successfully Registered",Toast.LENGTH_LONG).show();
 
             launchLoginActivity();
         }catch (Exception Ex){
             String errMessage = "registration failed";
-            Toast.makeText(this,errMessage,Toast.LENGTH_LONG);
+            Toast.makeText(this,errMessage,Toast.LENGTH_LONG).show();
             Log.e(TAG,Ex.getMessage());
             Ex.printStackTrace();
             // TODO: 3/16/2017  highlight which input has failed validation

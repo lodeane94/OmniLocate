@@ -22,7 +22,7 @@ public class PhoneManager {
 
     public PhoneManager(Context context){
         this.context = context;
-        pref = this.context.getSharedPreferences(Constants.SessionManager.PREF_NAME,Constants.SessionManager.PRIVATE_MODE);
+        pref = this.context.getSharedPreferences(Constants.PhoneManager.PREF_NAME,Constants.SessionManager.PRIVATE_MODE);
         editor = pref.edit();
     }
 

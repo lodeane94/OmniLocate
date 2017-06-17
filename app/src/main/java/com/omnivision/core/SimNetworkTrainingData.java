@@ -22,7 +22,7 @@ public class SimNetworkTrainingData {
     private SimNetworkCodes simNetworkCodes;
     @Unique
     private String expectedResultSnippet;
-    private int totalUsedCount;
+    private int totalUsedCount;//used to determine the validity of the results based on it's usage
     private String dateAdded;
     /** Used to resolve relations */
     @Generated(hash = 2040040024)

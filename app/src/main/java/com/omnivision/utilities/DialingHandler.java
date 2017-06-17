@@ -9,6 +9,9 @@ import android.nfc.Tag;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import com.omnivision.core.DaoSession;
+import com.omnivision.core.SimCard;
+
 /**
  * Created by Lodeane on 3/5/2017.
  */

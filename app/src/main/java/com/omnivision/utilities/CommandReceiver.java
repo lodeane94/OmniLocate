@@ -16,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -24,8 +25,14 @@ import com.google.android.gms.plus.Plus;
 import com.omnivision.core.CommandHandler;
 import com.omnivision.core.Constants;
 import com.omnivision.core.Constants.IntentActions;
+import com.omnivision.core.DaoSession;
 import com.omnivision.core.GPSLocation;
 import com.omnivision.core.Phone;
+import com.omnivision.core.PrepaidCredit;
+import com.omnivision.dao.IPrepaidCreditDao;
+import com.omnivision.dao.PrepaidCreditDaoImpl;
+import com.tablayoutexample.lkelly.omnivision.LoginActivity;
+import com.tablayoutexample.lkelly.omnivision.OmniLocateApplication;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -39,9 +46,11 @@ public class CommandReceiver extends BroadcastReceiver{
     public static final String SMS_RECEIVED_COMMAND = "com.omnisecurity.intent.action.SMS_RECEIVED_COMMAND";
     private final String TAG = "CommandReceiver";
     private LocationLookUpReceiver mResultReceiver;
-    private Map commandDetails;
+    private Map<String,String> commandDetails;
     private Context context;
     private Intent intent;
+    private DaoSession daoSession;
+    private SessionManager sessionManager;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -50,6 +59,8 @@ public class CommandReceiver extends BroadcastReceiver{
         * these information to the entire class body*/
         this.context = context;
         this.intent = intent;
+        daoSession = OmniLocateApplication.getSession(context);
+        sessionManager = new SessionManager(context);
         try {
             switch (intent.getAction()) {
                 case IntentActions.SMS_RECEIVED:
@@ -64,7 +75,11 @@ public class CommandReceiver extends BroadcastReceiver{
                     Log.d(TAG,"SMS was delivered");
                     break;
                 case IntentActions.USSD_RESULTS:
-                    Log.d(TAG,intent.getStringExtra("message"));
+                    Log.d(TAG,"ussd results received");
+                    String result = intent.getStringExtra(Constants.IntentActions.USSD_RESULTS);
+                    //TODO :(DELAYED) implement functionality that will be used to learn and respond to events from ussd commands
+                    /*if(LoginActivity.getInstance() != null)
+                        LoginActivity.getInstance().updateUI(result);*/
                     break;
             }
         } catch (Exception e) {
@@ -73,16 +88,20 @@ public class CommandReceiver extends BroadcastReceiver{
     }
 
     private void actionCommand() throws Exception {
-        String command = commandDetails.get(Constants.CommandDetails.COMMAND).toString().trim().toLowerCase();
+        Map<String,String> cmdInfo = CommandHandler
+                .getCommand(commandDetails.get(Constants.CommandDetails.COMMAND.name()));
+
+        String command = cmdInfo.get(Constants.CommandDetails.COMMAND.name());
+        String param = cmdInfo.get(Constants.CommandDetails.CMD_PARAM.name());
         //checking if commandDetails map is properly formed
-        if (!commandDetails.containsKey(Constants.CommandDetails.COMMAND)
-                && !commandDetails.containsKey(Constants.CommandDetails.ORIGIN)) {
+        if (!commandDetails.containsKey(Constants.CommandDetails.COMMAND.name())
+                && !commandDetails.containsKey(Constants.CommandDetails.ORIGIN.name())) {
             throw new Exception("Each command map must contain a command and and origin");
         }
 
         if (CommandHandler.validateCommand(command)
-                && Phone.isAPartnerDeviceNumber((String) commandDetails.get(Constants.CommandDetails.ORIGIN))) {
-            Log.i(TAG, "command = " + commandDetails.get(Constants.CommandDetails.COMMAND) + " + origin = " + commandDetails.get(Constants.CommandDetails.ORIGIN) + " is valid");
+                && Phone.isAPartnerDeviceNumber(commandDetails.get(Constants.CommandDetails.ORIGIN.name()))) {
+            Log.i(TAG, "command = " + commandDetails.get(Constants.CommandDetails.COMMAND.name()) + " + origin = " + commandDetails.get(Constants.CommandDetails.ORIGIN.name()) + " is valid");
 
             if (command.equals(Constants.Commands.FIND.toString())) {//FIND COMMAND
                 findCommand();
@@ -99,36 +118,52 @@ public class CommandReceiver extends BroadcastReceiver{
             if (command.equals(Constants.Commands.WIPE.toString())) {//WIPE COMMAND
                 //TODO
             }
-            if (command.equals(Constants.Commands.ADD_CREDIT.toString())
-                    || command.equals(Constants.Commands.ADD_CREDIT.toString().replace('_',' '))) {//ADD_CREDIT COMMAND
-                //TODO
+            if (command.equals(Constants.Commands.ADD_CREDIT.toString())) {//ADD_CREDIT COMMAND
+                addCreditCommand(param);
             }
             if (command.equals(Constants.Commands.CHECK_CREDIT.toString())) {//CHECK_CREDIT COMMAND
                 //TODO
+            }
+            if (command.equals(Constants.Commands.ACTIVATE_CREDIT.toString())) {//ACTIVATE_CREDIT COMMAND
+                activateCreditCommand();
             }
 
         }
 
     }
+    /**
+     * @author lkelly
+     * @desc method is used to add prepaid credit information to the application
+     * @params voucher number
+     * @return
+     * */
+    private void addCreditCommand(String voucherNumber) {
+        try {
+            HashMap<String, String> userDetails = sessionManager.getUserDetails();
+            PrepaidCredit prepaidCredit = new PrepaidCredit(voucherNumber, commandDetails.get(Constants.CommandDetails.ORIGIN.name()),
+                    Long.valueOf(userDetails.get(Constants.SessionManager.SIM_ID)), context);
+
+            CommandUtility.addCredit(prepaidCredit);
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
+
+    private void activateCreditCommand(){
+        try {
+            CommandUtility.activateCredit();
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
 
     private void findCommand() {
-     /*   mGoogleApiclient =
-                new GoogleApiClient.Builder(this.context)
-                        .addConnectionCallbacks(this)
-                        .addOnConnectionFailedListener(this).addApi(Plus.API)
-                        .build();*/
-
-        // Only start the service to fetch the address if GoogleApiClient is
-        // connected.
-       // if (mGoogleApiclient.isConnected() && mLastLocation != null) {
+        // start the service to fetch the address
+        try {
             startFetchAddressIntentService(NetworkManager.hasNetworkConnection(context));
-      //  }
-        // If GoogleApiClient isn't connected, process the user's request by
-        // setting mAddressRequested to true. Later, when GoogleApiClient connects,
-        // launch the service to fetch the address. As far as the user is
-        // concerned, pressing the Fetch Address button
-        // immediately kicks off the process of getting the address.
-   //     mAddressRequested = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -138,7 +173,7 @@ public class CommandReceiver extends BroadcastReceiver{
      * @params
      * @return
      * */
-    protected void startFetchAddressIntentService(boolean hasNetworkConnection) {
+    protected void startFetchAddressIntentService(boolean hasNetworkConnection) throws Exception {
         mResultReceiver = new LocationLookUpReceiver(new Handler());//receiver will be used for the callback of the location request
 
         Intent intent = new Intent(context, FetchAddressIntentService.class);
@@ -161,41 +196,6 @@ public class CommandReceiver extends BroadcastReceiver{
         }
         return null;
     }
-/*
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        // Gets the best and most recent location currently available,
-        // which may be null in rare cases when a location is not available
-        PermissionManager.check((Activity) context, android.Manifest.permission.ACCESS_FINE_LOCATION, Constants.Permissions.ACCESS_FINE_LOCATION_REQUEST_CODE.getCode());
-
-        if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            //TODO throw exception permission not allowed
-            return;
-        }
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiclient);
-
-        if(mLastLocation != null){
-            //determine whether a geocoder is available
-            if(!Geocoder.isPresent()){
-                //TODO throw exception for the prescence of the geocoder
-                return;
-            }
-
-            if(mAddressRequested){
-                startFetchAddressIntentService(NetworkManager.hasNetworkConnection(context));
-            }
-        }
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }*/
     //temp class
     //TODO this class is to be removed and move logic to the onReceive method of the commandreceiver class
     protected class LocationLookUpReceiver extends ResultReceiver {
@@ -210,9 +210,9 @@ public class CommandReceiver extends BroadcastReceiver{
             * based on which medium requested information about the device
             * respond accordingly*/
             if(responseMechanism() != null) {
-                if(responseMechanism() == Constants.CommandIssuerMechanism.SMS.name()) {
+                if(responseMechanism().equals(Constants.CommandIssuerMechanism.SMS.name())) {
                     if (resultCode == Constants.Location.SUCCESS_RESULT) {
-                        String receiver = (String) commandDetails.get(Constants.CommandDetails.ORIGIN);
+                        String receiver = commandDetails.get(Constants.CommandDetails.ORIGIN.name());
                         HashMap<String, String> locationMap = (HashMap<String, String>) resultData.getSerializable(Constants.Location.RESULT_DATA_KEY);
                         GPSLocation gpsLocation = new GPSLocation(locationMap.get(Constants.Location.LATITUDE), locationMap.get(Constants.Location.LONGITUDE));
                         if (locationMap.get(Constants.Location.ADDRESS_LINE) != null) {

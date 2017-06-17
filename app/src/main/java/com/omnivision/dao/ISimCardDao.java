@@ -16,4 +16,5 @@ public interface ISimCardDao {
     SimCard find(Long id);
     void update(SimCard simCard);
     void delete(SimCard simCard);
+    void deleteAll();
 }

@@ -10,6 +10,7 @@
     <string name="activity_login_initial_startup_ussd_command_hint">USSD Command</string>
     <string name="activity_login_initial_startup_complete_button">Get Started</string>
     <string name="activity_login_initial_startup_sms_cost_hint">Cost Per 1 SMS Text</string>
+    <string name="activity_login_initial_startup_relevant_result_hint">Relevant Result From The USSD Command Result</string>
     <string name="activity_login_initial_startup_add_ussd_cmd_button_text">Add</string>
     <string name="continue_button_text">Continue</string>
     <string name="login_text">Login</string>
@@ -42,6 +43,7 @@
     <string name="alert_dialog_no">No</string>
     <string name="alert_dialog_cancel">Cancel</string>
     <string name="alert_dialog_add">Add</string>
+    <string name="activity_login_initial_startup_skip">Skip Initial Setup</string>
     <string-array name="no_of_partner_devices">
         <item>Number Of Partner Devices</item>
         <item>1</item>

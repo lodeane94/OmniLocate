@@ -25,7 +25,7 @@ public class OmniLocateApplication extends Application {
         _instance = this;
     }
 
-    private static OmniLocateApplication getInstance(){
+    public static OmniLocateApplication getInstance(){
         return _instance;
     }
 

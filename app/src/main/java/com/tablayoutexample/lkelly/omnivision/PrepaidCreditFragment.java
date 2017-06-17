@@ -24,6 +24,7 @@ import com.omnivision.dao.ISimCardDao;
 import com.omnivision.dao.PrepaidCreditDaoImpl;
 import com.omnivision.dao.SimCardDaoImpl;
 import com.omnivision.utilities.AlertDialogHelper;
+import com.omnivision.utilities.CommandUtility;
 import com.omnivision.utilities.DialingHandler;
 import com.omnivision.utilities.ExpandableListAdapter;
 import com.omnivision.utilities.IAlertDialogHelper;
@@ -127,7 +128,11 @@ public class PrepaidCreditFragment extends Fragment {
                 addCredit();
                 break;
             case R.id.call_action:
-                activateUSSDCall();
+                try {
+                    activateUSSDCall();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
             case R.id.remove_action:
                 deletePrepaidCard();
@@ -214,9 +219,9 @@ public class PrepaidCreditFragment extends Fragment {
      * @params
      * @return
      * */
-    private void activateUSSDCall() {
+    private void activateUSSDCall() throws Exception {
         String selectedVoucherNumber = getSelectedItem();
-        DialingHandler.dial(selectedVoucherNumber,getActivity());
+        CommandUtility.activateCredit(selectedVoucherNumber);
     }
     /**
      * @author lkelly
@@ -256,7 +261,7 @@ public class PrepaidCreditFragment extends Fragment {
     }*/
     /**
      * @author lkelly
-     * @desc adds voucher number to the phone's database that can be activated by app's gui or a text message
+     * @desc adds voucher number to the phone's database that can be activated by app's gui
      * @params
      * @return
      * */
@@ -275,7 +280,7 @@ public class PrepaidCreditFragment extends Fragment {
                                 setVoucherNumber(response);
                                 Log.d(TAG,"voucher number : "+getVoucherNumber());
                                 PrepaidCredit prepaidCredit = new PrepaidCredit(response, userDetails.get(Constants.SessionManager.EMAIL), Long.valueOf(userDetails.get(Constants.SessionManager.SIM_ID)), context);
-                                prepaidCreditDao.insert(prepaidCredit);
+                                CommandUtility.addCredit(prepaidCredit);
                                 refreshModel();
                                 loadPrepaidCreditInformation();
                                 Toast.makeText(context, "Credit added successfully", Toast.LENGTH_LONG).show();
@@ -284,6 +289,8 @@ public class PrepaidCreditFragment extends Fragment {
                         }catch (SystemValidationException ex){
                             Toast.makeText(context,ex.getMessage(),Toast.LENGTH_LONG).show();
                             ex.printStackTrace();
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
 

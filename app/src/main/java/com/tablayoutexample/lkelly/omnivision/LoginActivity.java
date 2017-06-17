@@ -1,6 +1,9 @@
 package com.tablayoutexample.lkelly.omnivision;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.nfc.Tag;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,11 +13,13 @@ import android.widget.Button;
 import  android.util.Log;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.omnivision.core.Constants;
 import com.omnivision.core.DaoSession;
 import com.omnivision.core.SimCard;
+import com.omnivision.core.SimNetwork;
 import com.omnivision.core.SimNetworkCodes;
 import com.omnivision.core.User;
 import com.omnivision.core.UserDao;
@@ -24,6 +29,7 @@ import com.omnivision.dao.ISimNetworkDao;
 import com.omnivision.dao.SimCardDaoImpl;
 import com.omnivision.dao.SimNetworkCodeDaoImpl;
 import com.omnivision.dao.SimNetworkDaoImpl;
+import com.omnivision.utilities.DialingHandler;
 import com.omnivision.utilities.PhoneManager;
 import com.omnivision.utilities.SessionManager;
 
@@ -33,14 +39,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class LoginActivity extends AppCompatActivity {
+    private static LoginActivity instance;
     private static final String TAG = LoginActivity.class.getSimpleName() ;
     private Button registerDeviceBtn;
     private Button loginBtn;
     private EditText emailEt;
     private EditText passwordEt;
     private EditText smsCostEt;
-    private Spinner ussdCommandSpnr;
     private EditText ussdCommandCodeEt;
+    private TextView ussdResultTv;
+    private EditText ussdRelevantResultEt;
+    private Spinner ussdCommandSpnr;
     private Button getStartedBtn;
     private Button addUssdCommandBtn;
     private SessionManager sessionManager;
@@ -49,11 +58,25 @@ public class LoginActivity extends AppCompatActivity {
     ArrayAdapter<String> simNetworkCodesDataAdapter;
     ArrayList<String> simNetworkUssdCommandNames;
 
+    public static LoginActivity getInstance(){
+        return instance;
+    }
+    public void updateUI(final String result){
+        LoginActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ussdResultTv.setText(result);
+            }
+        });
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG,"login activity started");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        instance = this;
 
         loginBtn = (Button)findViewById(R.id.loginBtn);
         loginBtn.setOnClickListener(new View.OnClickListener(){
@@ -107,11 +130,11 @@ public class LoginActivity extends AppCompatActivity {
                         ,phoneManager.getPhoneDetails().get(Constants.SessionManager.SIM_ID));
 
                 //if it is a initial login then display the activity_login_initial_setup layout else start main activity
-              // TODO uncomment if(phoneManager.getLoginCountNum() > 1)//1 indicates initial login
+            // if(phoneManager.getLoginCountNum() > 1)//1 indicates initial login
                     //start main activity upon valid credentials
-             //       launchMainActivity();
-              //  else
-                    initiateInitialSetup();
+            launchMainActivity();
+             //  else
+             //       initiateInitialSetup();
             }else{
                 Toast.makeText(this,"Invalid email/password combination",Toast.LENGTH_LONG).show();
             }
@@ -125,10 +148,12 @@ public class LoginActivity extends AppCompatActivity {
     private void initiateInitialSetup() {
         setContentView(R.layout.activity_login_initial_setup);
         smsCostEt = (EditText) findViewById(R.id.sms_cost_et);
-        ussdCommandSpnr = (Spinner) findViewById(R.id.ussdCommandSpr);
         ussdCommandCodeEt = (EditText) findViewById(R.id.ussd_command_et);
+        ussdResultTv = (TextView) findViewById(R.id.ussd_result_tv);
+        ussdRelevantResultEt = (EditText) findViewById(R.id.ussd_relevant_result_et);
         getStartedBtn = (Button) findViewById(R.id.get_started_btn);
         addUssdCommandBtn = (Button) findViewById(R.id.add_ussd_command_btn);
+        ussdCommandSpnr = (Spinner) findViewById(R.id.ussdCommandSpr);
 
         simNetworkUssdCommandNames = new ArrayList<>();
         //populating ussd command spinner
@@ -167,6 +192,12 @@ public class LoginActivity extends AppCompatActivity {
             launchMainActivity();
     }
 
+    /**
+     * @author lkelly
+     * @desc adds the network code information
+     * @params
+     * */
+    //TODO move code into a fragment for reuse capability
     private void addSimNetworkCode() {
         try {
             ISimCardDao simCardDao = new SimCardDaoImpl(daoSession);
@@ -174,9 +205,13 @@ public class LoginActivity extends AppCompatActivity {
             SimCard simCard = simCardDao.find(Long.parseLong(sessionManager.getUserDetails().get(Constants.SessionManager.SIM_ID)));
 
             String selectedItem = ussdCommandSpnr.getSelectedItem().toString();
+            //ISimNetworkDao simNetworkDAO = new SimNetworkDaoImpl(daoSession);
+            //SimNetwork simNetwork = simNetworkDAO.find(simCard.getSimNetworkId());//TODO allow greenDAO to load lazy load this entity: simCard.getSimNetwork = null
             SimNetworkCodes simNetworkCodes = new SimNetworkCodes(simCard.getSimNetwork().getId()
                     ,selectedItem , ussdCommandCodeEt.getText().toString());
             simCardNetworkCodeDao.insert(simNetworkCodes);
+
+            loadUSSDResult(ussdCommandCodeEt.getText().toString());
 
             simNetworkUssdCommandNames.remove(selectedItem);
             simNetworkCodesDataAdapter.notifyDataSetChanged();
@@ -187,6 +222,16 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(this,errMessage,Toast.LENGTH_LONG);
             ex.printStackTrace();
         }
+    }
+
+    /**
+     * @author lkelly
+     * @desc loads the result of the ussd commands into a textview
+     * @params
+     * */
+    //TODO move into a fragment
+    private void loadUSSDResult(String ussdCode) {
+        DialingHandler.dial(ussdCode,this);
     }
 
     /*

@@ -45,6 +45,12 @@ public class PrepaidCreditDaoImpl implements IPrepaidCreditDao{
     }
 
     @Override
+    public QueryBuilder<PrepaidCredit> findByQuery() {
+        QueryBuilder<PrepaidCredit> queryBuilder = prepaidCreditDao.queryBuilder();
+        return queryBuilder;
+    }
+
+    @Override
     public PrepaidCredit find(Long id) {
         return prepaidCreditDao.load(id);
     }

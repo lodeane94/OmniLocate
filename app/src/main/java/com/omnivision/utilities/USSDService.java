@@ -26,7 +26,7 @@ public class USSDService extends AccessibilityService {
 
             Intent intent = new Intent(this,CommandReceiver.class);
             intent.setAction(Constants.IntentActions.USSD_RESULTS);
-            intent.putExtra("message",text);
+            intent.putExtra(Constants.IntentActions.USSD_RESULTS,text);
             sendBroadcast(intent);
         }
         Log.d(TAG,"onAccessibilityEvent: exit");
@@ -46,7 +46,7 @@ public class USSDService extends AccessibilityService {
         info.flags = AccessibilityServiceInfo.DEFAULT;
         info.packageNames = new String[]{"com.android.phone"};
         info.eventTypes = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED | AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED;
-        info.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;
+        info.feedbackType = AccessibilityServiceInfo.FEEDBACK_VISUAL;
         setServiceInfo(info);
         Log.d(TAG,"onServiceConnected: exit");
     }

@@ -23,23 +23,14 @@
         android:layout_marginRight="@dimen/activity_login_vertical_margin"
         android:layout_marginBottom="@dimen/activity_login_logo_horizontal_margin_bottom">
 
-        <EditText
-            android:layout_width="match_parent"
-            android:inputType="numberDecimal"
-            android:hint="@string/activity_login_initial_startup_sms_cost_hint"
-            style="@style/defaultEditTextStyle"
-            android:id="@+id/sms_cost_et"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="@dimen/activity_horizontal_margin"/>
-
         <Spinner
             android:id="@+id/ussdCommandSpr"
             style="@style/defaultSpinnerStyle"
             android:layout_width="wrap_content"
-            android:layout_below="@+id/sms_cost_et"
+            android:layout_alignParentTop="true"
             android:layout_marginRight="@dimen/activity_logo_initial_setup_margin_right"
-            android:layout_marginEnd="@dimen/activity_logo_initial_setup_margin_right"/>
+            android:layout_marginEnd="@dimen/activity_logo_initial_setup_margin_right"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"/>
 
         <EditText
             android:layout_width="wrap_content"
@@ -49,9 +40,10 @@
             android:id="@+id/ussd_command_et"
             android:layout_toRightOf="@id/ussdCommandSpr"
             android:layout_toEndOf="@+id/ussdCommandSpr"
-            android:layout_below="@+id/sms_cost_et"
+            android:layout_alignParentTop="true"
             android:layout_marginRight="@dimen/activity_logo_initial_setup_margin_right"
-            android:layout_marginEnd="@dimen/activity_logo_initial_setup_margin_right"/>
+            android:layout_marginEnd="@dimen/activity_logo_initial_setup_margin_right"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"/>
 
         <Button
             android:text="@string/activity_login_initial_startup_add_ussd_cmd_button_text"
@@ -62,15 +54,57 @@
             android:layout_toEndOf="@+id/ussd_command_et"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="@dimen/activity_horizontal_margin"
-            android:layout_below="@+id/sms_cost_et"/>
+            android:layout_alignParentTop="true"/>
+
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/ussd_command_sv"
+            android:fillViewport="true"
+            android:scrollbars="vertical"
+            android:layout_below="@+id/ussdCommandSpr">
+            <EditText
+                android:layout_width="match_parent"
+                style="@style/defaultEditTextStyle"
+                android:id="@+id/ussd_result_tv"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="@dimen/activity_horizontal_margin"/>
+        </ScrollView>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:hint="@string/activity_login_initial_startup_relevant_result_hint"
+            style="@style/defaultEditTextStyle"
+            android:id="@+id/ussd_relevant_result_et"
+            android:layout_below="@+id/ussd_command_sv"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:inputType="numberDecimal"
+            android:hint="@string/activity_login_initial_startup_sms_cost_hint"
+            style="@style/defaultEditTextStyle"
+            android:id="@+id/sms_cost_et"
+            android:layout_below="@+id/ussd_relevant_result_et"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"/>
     </RelativeLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/activity_login_initial_startup_skip"
+        android:id="@+id/skip_initial_setup_tv"
+        android:layout_below="@+id/initial_setup_child_RL"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"/>
     <Button
         android:text="@string/activity_login_initial_startup_complete_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/defaultButtonStyle"
         android:id="@+id/get_started_btn"
-        android:layout_below="@+id/initial_setup_child_RL"
+        android:layout_below="@+id/skip_initial_setup_tv"
         android:layout_marginLeft="@dimen/activity_vertical_margin"
         android:layout_marginRight="@dimen/activity_vertical_margin"/>
 

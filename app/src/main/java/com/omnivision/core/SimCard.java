@@ -19,9 +19,9 @@ public class SimCard implements ISimCard {
     private long id;
     private long phoneId;
     private Long simNetworkId;
-    @ToOne(joinProperty = "id")
+    @ToOne(joinProperty = "phoneId")
     private Phone phone;//TODO implement function to register simcard to the device
-    @ToOne(joinProperty = "id")
+    @ToOne(joinProperty = "simNetworkId")
     private SimNetwork simNetwork;
     @ToMany(referencedJoinProperty = "owner")
     private List<PrepaidCredit> prepaidCredit;
@@ -39,7 +39,8 @@ public class SimCard implements ISimCard {
     @Generated(hash = 1159325565)
     private transient Long simNetwork__resolvedKey;
 
-    public SimCard(long phoneId, String number, String areaCode, double smsCost,long simNetworkId) {
+    public SimCard(long id, long phoneId, String number, String areaCode, double smsCost,long simNetworkId) {
+        this.id = id;
         this.phoneId = phoneId;
         this.number = number;
         this.areaCode = areaCode;
@@ -102,15 +103,16 @@ public class SimCard implements ISimCard {
     }
 
     /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 572810880)
+    @Generated(hash = 1952452884)
     public void setPhone(@NotNull Phone phone) {
         if (phone == null) {
-            throw new DaoException("To-one property 'id' has not-null constraint; cannot set to-one to null");
+            throw new DaoException(
+                    "To-one property 'phoneId' has not-null constraint; cannot set to-one to null");
         }
         synchronized (this) {
             this.phone = phone;
-            id = phone.getId();
-            phone__resolvedKey = id;
+            phoneId = phone.getId();
+            phone__resolvedKey = phoneId;
         }
     }
 
@@ -138,9 +140,9 @@ public class SimCard implements ISimCard {
     }
 
     /** To-one relationship, resolved on first access. */
-    @Generated(hash = 73249274)
+    @Generated(hash = 398581896)
     public Phone getPhone() {
-        long __key = this.id;
+        long __key = this.phoneId;
         if (phone__resolvedKey == null || !phone__resolvedKey.equals(__key)) {
             final DaoSession daoSession = this.daoSession;
             if (daoSession == null) {
@@ -157,9 +159,9 @@ public class SimCard implements ISimCard {
     }
 
     /** To-one relationship, resolved on first access. */
-    @Generated(hash = 1794247200)
+    @Generated(hash = 1214986753)
     public SimNetwork getSimNetwork() {
-        long __key = this.id;
+        Long __key = this.simNetworkId;
         if (simNetwork__resolvedKey == null || !simNetwork__resolvedKey.equals(__key)) {
             final DaoSession daoSession = this.daoSession;
             if (daoSession == null) {
@@ -176,15 +178,12 @@ public class SimCard implements ISimCard {
     }
 
     /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1092547244)
-    public void setSimNetwork(@NotNull SimNetwork simNetwork) {
-        if (simNetwork == null) {
-            throw new DaoException("To-one property 'id' has not-null constraint; cannot set to-one to null");
-        }
+    @Generated(hash = 1073800551)
+    public void setSimNetwork(SimNetwork simNetwork) {
         synchronized (this) {
             this.simNetwork = simNetwork;
-            id = simNetwork.getId();
-            simNetwork__resolvedKey = id;
+            simNetworkId = simNetwork == null ? null : simNetwork.getId();
+            simNetwork__resolvedKey = simNetworkId;
         }
     }
 

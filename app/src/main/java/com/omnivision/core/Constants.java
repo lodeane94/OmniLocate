@@ -8,13 +8,13 @@ public class Constants {
     public static String CommandString = "COMMAND";//command string constant
     public enum DeviceStatus {STOLEN,LOST,NOT_STOLEN}
     public enum CommandStatus {VALID,NOT_VALID}
-    public enum CommandDetails{COMMAND,ORIGIN}
+    public enum CommandDetails{COMMAND,ORIGIN,CMD_PARAM}
     public enum NetworkConnection{CONNECTION_AVAILABILITY}
     public enum NetworkConnectionType{WIFI,MOBILE}
     public enum General{RECEIVER_RESULT_MESSAGE,YES,NO}
     public enum CommandIssuerMechanism{SMS,WEB}
     public enum Commands {
-        STOLEN,LOST,FIND,WIPE,ADD_CREDIT,CHECK_CREDIT,SIM_CHANGE;
+        STOLEN,LOST,FIND,WIPE,ADD_CREDIT,CHECK_CREDIT,ACTIVATE_CREDIT,SIM_CHANGE;
 
         @Override
         public String toString(){
@@ -118,6 +118,16 @@ public class Constants {
     public static final class AlertDialog{
         public static final String POSITVE_SELECTED = "POSITVE_SELECTED";
         public static final String NEGATIVE_SELECTED = "NEGATIVE_SELECTED";
+    }
+
+    public static final class Dao{
+        public static final String PHONE = "PHONE";
+        public static final String SIM_CARD = "SIM_CARD";
+        public static final String SIM_NETWORK = "SIM_NETWORK";
+        public static final String SIM_NETWORK_CODE = "SIM_NETWORK_CODE";
+        public static final String PREPAID_CREDIT = "PREPAID_CREDIT";
+        public static final String USER = "USER";
+        public static final String PARTNER_DEVICE = "PARTNER_DEVICE";
     }
 
 }

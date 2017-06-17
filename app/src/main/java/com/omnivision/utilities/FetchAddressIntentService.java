@@ -40,6 +40,7 @@ public class FetchAddressIntentService extends IntentService implements GoogleAp
     private Intent intent;
     private Geocoder geocoder;
     private LocationRequest mLocationRequest;
+    private LocationListenerProvider locationListenerProvider;
 
     public FetchAddressIntentService(){
         super("FetchAddressIntentService");
@@ -108,7 +109,7 @@ public class FetchAddressIntentService extends IntentService implements GoogleAp
 
             processDeviceLocation(mLastLocation);
         }*/
-        LocationListenerProvider locationListenerProvider = new LocationListenerProvider();
+        locationListenerProvider = new LocationListenerProvider();
         locationListenerProvider.startLocationUpdate();
         Log.i(TAG,"onConnected GoogleAPIClient: exit");
     }
@@ -133,6 +134,7 @@ public class FetchAddressIntentService extends IntentService implements GoogleAp
             /*
             * if no network connection is found then send only the latitude and longitude
             * to the caller else it should send those coordinates as well as the address name*/
+            hasNetwork = false;//TODO testing purpose
             if(hasNetwork && Geocoder.isPresent()) {
                 Log.i(TAG,"Network available! getting address line along with coordinates");
                 addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
@@ -158,6 +160,8 @@ public class FetchAddressIntentService extends IntentService implements GoogleAp
         }catch (NullPointerException nullPointerException){
             errorMessage = nullPointerException.getMessage();
             Log.e(TAG,errorMessage);
+        }finally {
+            locationListenerProvider.stopLocationUpdate();
         }
 
         //Handle case where no address is found
@@ -229,7 +233,7 @@ public class FetchAddressIntentService extends IntentService implements GoogleAp
 
         private void initLocationRequest() {
             mLocationRequest = new LocationRequest();
-            mLocationRequest.setInterval(5000);
+            mLocationRequest.setInterval(10000);
             mLocationRequest.setFastestInterval(2000);
             mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         }
