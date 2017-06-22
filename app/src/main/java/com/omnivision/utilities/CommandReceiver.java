@@ -27,15 +27,26 @@ import com.omnivision.core.Constants;
 import com.omnivision.core.Constants.IntentActions;
 import com.omnivision.core.DaoSession;
 import com.omnivision.core.GPSLocation;
+import com.omnivision.core.IPartnerDevice;
+import com.omnivision.core.PartnerDevice;
+import com.omnivision.core.PartnerDeviceDao;
 import com.omnivision.core.Phone;
+import com.omnivision.core.PhoneDao;
 import com.omnivision.core.PrepaidCredit;
+import com.omnivision.dao.IPartnerDeviceDao;
+import com.omnivision.dao.IPhoneDao;
 import com.omnivision.dao.IPrepaidCreditDao;
+import com.omnivision.dao.PartnerDeviceDaoImpl;
+import com.omnivision.dao.PhoneDaoImpl;
 import com.omnivision.dao.PrepaidCreditDaoImpl;
 import com.tablayoutexample.lkelly.omnivision.LoginActivity;
 import com.tablayoutexample.lkelly.omnivision.OmniLocateApplication;
 
+import org.greenrobot.greendao.query.QueryBuilder;
+
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,6 +55,8 @@ import java.util.Map;
 
 public class CommandReceiver extends BroadcastReceiver{
     public static final String SMS_RECEIVED_COMMAND = "com.omnisecurity.intent.action.SMS_RECEIVED_COMMAND";
+    public static final int MISSING_DEVICE_REQUEST_CODE = 1;
+
     private final String TAG = "CommandReceiver";
     private LocationLookUpReceiver mResultReceiver;
     private Map<String,String> commandDetails;
@@ -51,6 +64,7 @@ public class CommandReceiver extends BroadcastReceiver{
     private Intent intent;
     private DaoSession daoSession;
     private SessionManager sessionManager;
+    private HashMap<String, String> userDetails;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -61,6 +75,7 @@ public class CommandReceiver extends BroadcastReceiver{
         this.intent = intent;
         daoSession = OmniLocateApplication.getSession(context);
         sessionManager = new SessionManager(context);
+        userDetails = sessionManager.getUserDetails();
         try {
             switch (intent.getAction()) {
                 case IntentActions.SMS_RECEIVED:
@@ -73,6 +88,10 @@ public class CommandReceiver extends BroadcastReceiver{
                     break;
                 case IntentActions.SMS_DELIVERED:
                     Log.d(TAG,"SMS was delivered");
+                    break;
+                case IntentActions.MISSING_DEVICE_ALARM_STARTED:
+                    Log.d(TAG,"Missing device alarm has been triggered");
+                    initiateMissingDeviceProtocols();
                     break;
                 case IntentActions.USSD_RESULTS:
                     Log.d(TAG,"ussd results received");
@@ -87,6 +106,38 @@ public class CommandReceiver extends BroadcastReceiver{
         }
     }
 
+    /**
+     * @author lkelly
+     * @desc Checks the status of the device and respond accordingly:
+     *       if device is lost then only poll gps coordinates and return results to the web
+     *       if network is available or to the primary partner device
+     *
+     *       if device is stolen then  poll gps coordinates and return results to the web
+     *       if network is available or to the primary partner device and start service that
+     *       will capture the potential thief's face or surroundinga
+     * @params
+     * @return
+     * */
+    private void initiateMissingDeviceProtocols() {
+        Phone phone = OmniLocateApplication.getPhoneInstance();
+        String status = phone.getDeviceStatus();
+
+        switch (status){
+            case Constants.DeviceStatus.LOST:
+                findCommand();
+                break;
+            case Constants.DeviceStatus.STOLEN:
+                findCommand();
+                break;
+        }
+    }
+
+    /**
+     * @author lkelly
+     * @desc Action the command that was received
+     * @params
+     * @return
+     * */
     private void actionCommand() throws Exception {
         Map<String,String> cmdInfo = CommandHandler
                 .getCommand(commandDetails.get(Constants.CommandDetails.COMMAND.name()));
@@ -107,10 +158,10 @@ public class CommandReceiver extends BroadcastReceiver{
                 findCommand();
             }
             if (command.equals(Constants.Commands.LOST.toString())) {//LOST COMMAND
-                //TODO
+                lostCommand();
             }
             if (command.equals(Constants.Commands.STOLEN.toString())) {//STOLEN COMMAND
-                //TODO
+                stolenCommand();
             }
             if (command.equals(Constants.Commands.SIM_CHANGE.toString())) {//SIM_CHANGE COMMAND
                 //TODO
@@ -131,6 +182,27 @@ public class CommandReceiver extends BroadcastReceiver{
         }
 
     }
+
+    /**
+     * @author lkelly
+     * @desc marks phone's status as stolen and initiate operations for that status
+     * @params
+     * @return
+     * */
+    private void stolenCommand() throws Exception {
+        CommandUtility.initiateStolenDeviceProtocol();
+    }
+
+    /**
+     * @author lkelly
+     * @desc marks phone's status as lost and initiate operations for that status
+     * @params
+     * @return
+     * */
+    private void lostCommand() throws Exception {
+        CommandUtility.initiateLostDeviceProtocol();
+    }
+
     /**
      * @author lkelly
      * @desc method is used to add prepaid credit information to the application
@@ -139,7 +211,6 @@ public class CommandReceiver extends BroadcastReceiver{
      * */
     private void addCreditCommand(String voucherNumber) {
         try {
-            HashMap<String, String> userDetails = sessionManager.getUserDetails();
             PrepaidCredit prepaidCredit = new PrepaidCredit(voucherNumber, commandDetails.get(Constants.CommandDetails.ORIGIN.name()),
                     Long.valueOf(userDetails.get(Constants.SessionManager.SIM_ID)), context);
 
@@ -193,6 +264,8 @@ public class CommandReceiver extends BroadcastReceiver{
         switch (intent.getAction()) {
             case IntentActions.SMS_RECEIVED:
                 return Constants.CommandIssuerMechanism.SMS.name();
+            case IntentActions.MISSING_DEVICE_ALARM_STARTED :
+                return Constants.CommandIssuerMechanism.SMS_WEB.name();
         }
         return null;
     }
@@ -209,30 +282,61 @@ public class CommandReceiver extends BroadcastReceiver{
             /*
             * based on which medium requested information about the device
             * respond accordingly*/
-            if(responseMechanism() != null) {
+            if(responseMechanism() != null && resultCode == Constants.Location.SUCCESS_RESULT) {
                 if(responseMechanism().equals(Constants.CommandIssuerMechanism.SMS.name())) {
-                    if (resultCode == Constants.Location.SUCCESS_RESULT) {
-                        String receiver = commandDetails.get(Constants.CommandDetails.ORIGIN.name());
-                        HashMap<String, String> locationMap = (HashMap<String, String>) resultData.getSerializable(Constants.Location.RESULT_DATA_KEY);
-                        GPSLocation gpsLocation = new GPSLocation(locationMap.get(Constants.Location.LATITUDE), locationMap.get(Constants.Location.LONGITUDE));
-                        if (locationMap.get(Constants.Location.ADDRESS_LINE) != null) {
-                            gpsLocation.setAddressLine(locationMap.get(Constants.Location.ADDRESS_LINE));
-                        }
+                    String recipient = commandDetails.get(Constants.CommandDetails.ORIGIN.name());
+                    smsResponder(resultData,recipient);
+                }
+                if(responseMechanism().equals(Constants.CommandIssuerMechanism.WEB.name())) {
+                    //TODO implement response for the web
+                }
+                if(responseMechanism().equals(Constants.CommandIssuerMechanism.SMS_WEB.name())) {
+                    Long phoneId = Long.parseLong(userDetails.get(Constants.SessionManager.PHONE_ID));
 
-                        SMSUtility smsUtility = new SMSUtility(SMSUtility.divideMessage(gpsLocation.toString(),gpsLocation.getGoogleMapsLink()), receiver, context);
+                    IPartnerDeviceDao partnerDeviceDao = new PartnerDeviceDaoImpl(daoSession);
+                    QueryBuilder<PartnerDevice> queryBuilder = partnerDeviceDao.findByQuery();
+                    queryBuilder.where(PartnerDeviceDao.Properties.IsPrimaryFlag.eq(true),
+                        PartnerDeviceDao.Properties.PhoneId.eq(phoneId));
 
-                        smsUtility.sendSMS();
-                    }else{
-                        try {
-                            String message = "Failure retrieving location from the device";
-                            Log.e(TAG, message);//TODO attempt to request information for a maximum of three times then throw error message
-                            throw new Exception(message);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    //String primaryPartnerRecipient = queryBuilder.unique().getPartnerDeviceNum();
+                    //smsResponder(resultData,primaryPartnerRecipient);
+                    //webResponder();TODO call this function here
+                }
+            }else{
+                try {
+                    String message = "Failure retrieving location from the device";
+                    Log.e(TAG, message);//TODO attempt to request information for a maximum of three times then throw error message
+                    throw new Exception(message);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
+        }
+        /**
+         * @author lkelly
+         * @desc Sends location information through sms
+         * @params
+         * @return
+         * */
+        private void smsResponder(Bundle  resultData,String recipient){
+            HashMap<String, String> locationMap = (HashMap<String, String>) resultData.getSerializable(Constants.Location.RESULT_DATA_KEY);
+            GPSLocation gpsLocation = new GPSLocation(locationMap.get(Constants.Location.LATITUDE), locationMap.get(Constants.Location.LONGITUDE));
+            if (locationMap.get(Constants.Location.ADDRESS_LINE) != null) {
+                gpsLocation.setAddressLine(locationMap.get(Constants.Location.ADDRESS_LINE));
+            }
+
+            SMSUtility smsUtility = new SMSUtility(SMSUtility.divideMessage(gpsLocation.toString(),gpsLocation.getGoogleMapsLink()), recipient, context);
+
+            smsUtility.sendSMS();
+        }
+        /**
+         * @author lkelly
+         * @desc Sends location information through the web
+         * @params
+         * @return
+         * */
+        private void webResponder(){
+            //TODO unimplemented method
         }
     }
 }

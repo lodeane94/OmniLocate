@@ -63,11 +63,16 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
     private ISimNetworkDao simNetworkDao;
     private ISimCardDao simCardDao;
 
+    private Long phoneId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG,"device registration activity started");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_registration);
+        //setting unique identifier for phone, it will be deleted upon reset of phone
+        //TODO if user is already registered with no phone id, then regenerate this ID and map it back to the user
+        phoneId = Long.parseLong(String.valueOf(System.currentTimeMillis())
+                .substring(1,10));
 
         daoSession = OmniLocateApplication.getSession(this);
         simCardDao = new SimCardDaoImpl(daoSession);
@@ -105,7 +110,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
                 public void onClick(View v) {
                 /*adding the partner devices numbers to the list to be persisted*/
                     partnerDevicesAddedCount++;
-                    PartnerDevice partnerDevice = new PartnerDevice(partnerDevicesAddedCount,partnerDeviceNumEt.getText().toString());
+                    PartnerDevice partnerDevice = new PartnerDevice(phoneId,partnerDeviceNumEt.getText().toString(),false);
                     partnerDevicesCellNumbers.add(partnerDevice);
                     partnerDevicesCellNumAdapter.notifyDataSetChanged();
                     //disable add button to restrict partner devices total
@@ -200,10 +205,6 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
             Log.i(TAG,"setting user information");
             //TODO add validation to all fields
             DaoSession daoSession = OmniLocateApplication.getSession(DeviceRegistrationActivity.this);//initializing dao session
-            //setting unique identifier for phone, it will be deleted upon reset of phone
-            //TODO if user is already registered with no phone id, then regenerate this ID and map it back to the user
-            Long phoneId = Long.parseLong(String.valueOf(System.currentTimeMillis())
-                    .substring(1,10));
             Long simId = Long.parseLong(String.valueOf(System.currentTimeMillis())
                     .substring(1,10));
             String cellNum = cellNumEt.getText().toString();
@@ -214,7 +215,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
             if(simNetwork == null)
                 throw new Exception(selectedSimNetworkProvider +" not available for usage in OmniLocate");
 
-            Phone phone = new Phone(phoneId,cellNum,selectedCountry, Constants.DeviceStatus.NOT_STOLEN.toString(),partnerDevicesCellNumbers);//partner devices number not set here
+            Phone phone = new Phone(phoneId,cellNum,selectedCountry, Constants.DeviceStatus.OK,partnerDevicesCellNumbers);//partner devices number not set here
             User user = new User(emailEt.getText().toString(),passwordEt.getText().toString(),phone);//TODO hash password in database
             SimCard simCard = new SimCard(simId,phoneId,cellNum, cellNum.substring(0,3),0.00,simNetwork.getId());
             //persisting user to the omnilocate database.

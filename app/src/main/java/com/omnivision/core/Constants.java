@@ -6,13 +6,12 @@ package com.omnivision.core;
 
 public class Constants {
     public static String CommandString = "COMMAND";//command string constant
-    public enum DeviceStatus {STOLEN,LOST,NOT_STOLEN}
     public enum CommandStatus {VALID,NOT_VALID}
     public enum CommandDetails{COMMAND,ORIGIN,CMD_PARAM}
     public enum NetworkConnection{CONNECTION_AVAILABILITY}
     public enum NetworkConnectionType{WIFI,MOBILE}
     public enum General{RECEIVER_RESULT_MESSAGE,YES,NO}
-    public enum CommandIssuerMechanism{SMS,WEB}
+    public enum CommandIssuerMechanism{SMS,WEB,SMS_WEB}
     public enum Commands {
         STOLEN,LOST,FIND,WIPE,ADD_CREDIT,CHECK_CREDIT,ACTIVATE_CREDIT,SIM_CHANGE;
 
@@ -35,6 +34,11 @@ public class Constants {
         public int getCode(){return this.code;}
     }
 
+    public static final class DeviceStatus{
+        public static final String STOLEN = "STOLEN";
+        public static final String LOST = "LOST";
+        public static final String OK = "OK";
+    }
 
     public static final class Navigation{
         public static final String HOME = "HOME";
@@ -60,6 +64,7 @@ public class Constants {
         public static final String SMS_SENT = "SMS_SENT";
         public static final String SMS_DELIVERED = "SMS_DELIVERED";
         public static  final String USSD_RESULTS = "USSD_RESULTS";
+        public static  final String MISSING_DEVICE_ALARM_STARTED = "MISSING_DEVICE_ALARM_STARTED";
     }
 
     public static final class Location{

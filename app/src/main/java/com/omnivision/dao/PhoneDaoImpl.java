@@ -3,6 +3,7 @@ package com.omnivision.dao;
 import com.omnivision.core.DaoSession;
 import com.omnivision.core.Phone;
 import com.omnivision.core.PhoneDao;
+import com.omnivision.core.PrepaidCredit;
 import com.omnivision.core.PrepaidCreditDao;
 
 import org.greenrobot.greendao.query.QueryBuilder;
@@ -43,6 +44,12 @@ public class PhoneDaoImpl implements IPhoneDao {
         QueryBuilder<Phone> queryBuilder = phoneDao.queryBuilder();
         queryBuilder.where(PhoneDao.Properties.CellNum.eq(value));
         return queryBuilder.unique();
+    }
+
+    @Override
+    public QueryBuilder<Phone> findByQuery() {
+        QueryBuilder<Phone> queryBuilder = phoneDao.queryBuilder();
+        return queryBuilder;
     }
 
     @Override
