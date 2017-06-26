@@ -1,6 +1,10 @@
 package com.tablayoutexample.lkelly.omnivision;
 
 import android.Manifest;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.support.v4.widget.DrawerLayout;
@@ -19,6 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import com.omnivision.Services.CameraService;
 import com.omnivision.core.Constants;
 import com.omnivision.utilities.CommandReceiver;
 import com.omnivision.utilities.PermissionManager;
@@ -49,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
     private SessionManager sessionManager;
     private HashMap<String,String> userDetails;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,28 +65,90 @@ public class MainActivity extends AppCompatActivity {
         //setting user details
         userDetails = sessionManager.getUserDetails();
 
+        checkDevicePermissions();
+
         mainToolBar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(mainToolBar);
-
-        if(PermissionManager.hasPermission(MainActivity.this,Manifest.permission.RECEIVE_SMS)
-                && PermissionManager.hasPermission(MainActivity.this,Manifest.permission.SEND_SMS)){
-            registerCommandReceiver();
-        }
 
         initializeDrawerLayout(savedInstanceState);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        /*if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            return;
+        selectItem(Constants.Navigation.NavigationPositions.HOME);//selecting the HOME position from the navigation drawer
+
+       // if(PermissionManager.hasPermission(MainActivity.this,Manifest.permission.RECEIVE_SMS)
+         //       && PermissionManager.hasPermission(MainActivity.this,Manifest.permission.SEND_SMS)){
+        registerCommandReceiver();
+        //}
+    }
+
+    /**
+     * @author lkelly
+     * @desc checks and request device permissions
+     *       Permissions include:
+     *       RECEIVE_SMS
+     *       ACCESS_FINE_LOCATION
+     *       CALL_PHONE
+     *       CAMERA
+     *       WRITE_EXTERNAL_STORAGE
+     * @params
+     * @return
+     * */
+    private void checkDevicePermissions() {
+        PermissionManager.check(this, Manifest.permission.RECEIVE_SMS, Constants.Permissions.SMS_REQUEST_CODE.getCode());
+        PermissionManager.check(this, Manifest.permission.ACCESS_FINE_LOCATION, Constants.Permissions.ACCESS_FINE_LOCATION_REQUEST_CODE.getCode());
+        PermissionManager.check(this,Manifest.permission.CALL_PHONE,Constants.Permissions.CALL_PHONE_REQUEST_CODE.getCode());
+        PermissionManager.check(this,Manifest.permission.CAMERA,Constants.Permissions.CAMERA_REQUEST_CODE.getCode());
+        PermissionManager.check(this,Manifest.permission.WRITE_EXTERNAL_STORAGE,Constants.Permissions.CAMERA_REQUEST_CODE.getCode());
+    }
+
+    private void registerCommandReceiver(){
+        Log.i(TAG,"Registering the command receiver!");
+        commandReceiver = new CommandReceiver();
+        //creating intent filter for the listening of received sms
+        IntentFilter smsReceivedIntentFilter = new IntentFilter(Constants.IntentActions.SMS_RECEIVED);//used for the filtering received sms
+        IntentFilter smsSentIntentFilter = new IntentFilter(Constants.IntentActions.SMS_SENT);
+        IntentFilter smsDeliveredIntentFilter = new IntentFilter(Constants.IntentActions.SMS_DELIVERED);
+
+        //TODO register receiver in a separate thread
+        if (PermissionManager.hasPermission(this,Manifest.permission.RECEIVE_SMS)) {
+            registerReceiver(commandReceiver, smsReceivedIntentFilter);
+            registerReceiver(commandReceiver, smsSentIntentFilter);
+            registerReceiver(commandReceiver, smsDeliveredIntentFilter);
         }
 
-        String code = "*" + 120 + Uri.encode("#");
-        startService(new Intent(this, USSDService.class));
-        Intent intent = new Intent(android.content.Intent.ACTION_CALL,Uri.parse("tel:" + code));
-        startActivity(intent);*/
-        selectItem(Constants.Navigation.NavigationPositions.HOME);//selecting the HOME position from the navigation drawer
+        /*TODO to be removed: testing
+        IntentFilter lockIntentFilter = new IntentFilter();
+        lockIntentFilter.addAction(Intent.ACTION_SCREEN_ON);
+        lockIntentFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        lockIntentFilter.addAction(Intent.ACTION_USER_PRESENT);
+        registerReceiver(commandReceiver,lockIntentFilter);
+
+        ComponentName cn = new ComponentName(this,CommandReceiver.AdminReceiver.class);
+        DevicePolicyManager mgr = (DevicePolicyManager) this.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        //enable custom device administrator if it is not active
+        if(!mgr.isAdminActive(cn)){
+            Intent adminIntent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+            adminIntent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN,cn);
+            adminIntent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,this.getString(R.string.device_admin_description));
+            startActivity(adminIntent);
+        }*/
+
+        Log.i(TAG,"Command receiver registered successfully!");
     }
+
+    //Handle User's response for your permission request
+  /*  @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if(requestCode == Constants.Permissions.SMS_REQUEST_CODE.getCode()){//response for SMS permission request
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                registerCommandReceiver();
+            }else{
+                //What to do if user disallowed requested SMS permission
+            }
+        }
+    }*/
+
     /**
      * @author lkelly
      * @desc initializes the navigation drawer and it's related items
@@ -268,41 +337,4 @@ public class MainActivity extends AppCompatActivity {
         mTitle = mDrawerTitle = mDrawerTitles[position];
         mDrawerLayout.closeDrawer(mNavigationPaneLayout);
     }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        PermissionManager.check(this, Manifest.permission.RECEIVE_SMS, Constants.Permissions.SMS_REQUEST_CODE.getCode());
-        PermissionManager.check(this, Manifest.permission.ACCESS_FINE_LOCATION, Constants.Permissions.ACCESS_FINE_LOCATION_REQUEST_CODE.getCode());
-        PermissionManager.check(this,Manifest.permission.CALL_PHONE,Constants.Permissions.CALL_PHONE_REQUEST_CODE.getCode());
-    }
-
-    //Handle User's response for your permission request
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if(requestCode == Constants.Permissions.SMS_REQUEST_CODE.getCode()){//response for SMS permission request
-            if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                registerCommandReceiver();
-            }else{
-                //What to do if user disallowed requested SMS permission
-            }
-        }
-    }
-
-    private void registerCommandReceiver(){
-        Log.i(TAG,"Registering the command receiver!");
-        //creating intent filter for the listening of received sms
-        IntentFilter smsReceivedIntentFilter = new IntentFilter(Constants.IntentActions.SMS_RECEIVED);//used for the filtering received sms
-        IntentFilter smsSentIntentFilter = new IntentFilter(Constants.IntentActions.SMS_SENT);
-        IntentFilter smsDeliveredIntentFilter = new IntentFilter(Constants.IntentActions.SMS_DELIVERED);
-
-        registerReceiver(commandReceiver,smsReceivedIntentFilter);
-        registerReceiver(commandReceiver,smsSentIntentFilter);
-        registerReceiver(commandReceiver,smsDeliveredIntentFilter);
-
-        Log.i(TAG,"Command receiver registered successfully!");
-    }
-
-
 }

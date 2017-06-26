@@ -1,52 +1,35 @@
 package com.omnivision.utilities;
 
-import android.app.Activity;
+import android.app.admin.DeviceAdminReceiver;
+import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Geocoder;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.os.ResultReceiver;
-import android.provider.Telephony;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
-import android.widget.TextView;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.plus.Plus;
+import com.omnivision.Services.CameraService;
+import com.omnivision.Services.FetchAddressIntentService;
 import com.omnivision.core.CommandHandler;
 import com.omnivision.core.Constants;
 import com.omnivision.core.Constants.IntentActions;
 import com.omnivision.core.DaoSession;
 import com.omnivision.core.GPSLocation;
-import com.omnivision.core.IPartnerDevice;
 import com.omnivision.core.PartnerDevice;
 import com.omnivision.core.PartnerDeviceDao;
 import com.omnivision.core.Phone;
-import com.omnivision.core.PhoneDao;
 import com.omnivision.core.PrepaidCredit;
 import com.omnivision.dao.IPartnerDeviceDao;
-import com.omnivision.dao.IPhoneDao;
-import com.omnivision.dao.IPrepaidCreditDao;
 import com.omnivision.dao.PartnerDeviceDaoImpl;
-import com.omnivision.dao.PhoneDaoImpl;
-import com.omnivision.dao.PrepaidCreditDaoImpl;
-import com.tablayoutexample.lkelly.omnivision.LoginActivity;
 import com.tablayoutexample.lkelly.omnivision.OmniLocateApplication;
+import com.tablayoutexample.lkelly.omnivision.R;
 
 import org.greenrobot.greendao.query.QueryBuilder;
 
-import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -91,7 +74,8 @@ public class CommandReceiver extends BroadcastReceiver{
                     break;
                 case IntentActions.MISSING_DEVICE_ALARM_STARTED:
                     Log.d(TAG,"Missing device alarm has been triggered");
-                    initiateMissingDeviceProtocols();
+                    //initiateMissingDeviceProtocols();
+                    findCommand();
                     break;
                 case IntentActions.USSD_RESULTS:
                     Log.d(TAG,"ussd results received");
@@ -99,6 +83,18 @@ public class CommandReceiver extends BroadcastReceiver{
                     //TODO :(DELAYED) implement functionality that will be used to learn and respond to events from ussd commands
                     /*if(LoginActivity.getInstance() != null)
                         LoginActivity.getInstance().updateUI(result);*/
+                    break;
+                case Intent.ACTION_SCREEN_ON:
+                    Log.d(TAG,"action screen on intent received");
+                    captureSilentPhoto(context);
+                    break;
+                case Intent.ACTION_SCREEN_OFF:
+                    Log.d(TAG,"action screen off intent received");
+                    break;
+                case Intent.ACTION_USER_PRESENT:
+                    Log.d(TAG,"lock screen present");
+
+
                     break;
             }
         } catch (Exception e) {
@@ -117,7 +113,7 @@ public class CommandReceiver extends BroadcastReceiver{
      *       will capture the potential thief's face or surroundinga
      * @params
      * @return
-     * */
+     *
     private void initiateMissingDeviceProtocols() {
         Phone phone = OmniLocateApplication.getPhoneInstance();
         String status = phone.getDeviceStatus();
@@ -130,7 +126,7 @@ public class CommandReceiver extends BroadcastReceiver{
                 findCommand();
                 break;
         }
-    }
+    }*/
 
     /**
      * @author lkelly
@@ -269,6 +265,20 @@ public class CommandReceiver extends BroadcastReceiver{
         }
         return null;
     }
+    /**
+     * @author lkelly
+     * @desc calls service the will silently capture a photo using the front facing
+     *       camera if phone's status is stolen
+     * @params
+     * @return
+     * */
+    private static void captureSilentPhoto(Context context){
+        Phone phone = OmniLocateApplication.getPhoneInstance();
+        if(phone.getDeviceStatus().equals(Constants.DeviceStatus.STOLEN)){
+            Intent camServiceIntent = new Intent(context,CameraService.class);
+            context.startService(camServiceIntent);
+        }
+    }
     //temp class
     //TODO this class is to be removed and move logic to the onReceive method of the commandreceiver class
     protected class LocationLookUpReceiver extends ResultReceiver {
@@ -296,7 +306,7 @@ public class CommandReceiver extends BroadcastReceiver{
                     IPartnerDeviceDao partnerDeviceDao = new PartnerDeviceDaoImpl(daoSession);
                     QueryBuilder<PartnerDevice> queryBuilder = partnerDeviceDao.findByQuery();
                     queryBuilder.where(PartnerDeviceDao.Properties.IsPrimaryFlag.eq(true),
-                        PartnerDeviceDao.Properties.PhoneId.eq(phoneId));
+                            PartnerDeviceDao.Properties.PhoneId.eq(phoneId));
 
                     //String primaryPartnerRecipient = queryBuilder.unique().getPartnerDeviceNum();
                     //smsResponder(resultData,primaryPartnerRecipient);
@@ -339,4 +349,17 @@ public class CommandReceiver extends BroadcastReceiver{
             //TODO unimplemented method
         }
     }
+    //TODO implement in future builds
+    /*
+    public final class AdminReceiver extends DeviceAdminReceiver{
+        @Override
+        public void onPasswordFailed(Context ctx, Intent intent){
+            CommandReceiver.captureSilentPhoto(ctx);
+        }
+
+        @Override
+        public void onPasswordSucceeded(Context ctx, Intent intent){
+            CommandReceiver.captureSilentPhoto(ctx);
+        }
+    }*/
 }

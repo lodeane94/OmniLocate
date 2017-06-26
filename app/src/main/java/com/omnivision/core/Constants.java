@@ -24,7 +24,8 @@ public class Constants {
         //Define constants for each permission request
         SMS_REQUEST_CODE(1),
         ACCESS_FINE_LOCATION_REQUEST_CODE(2),
-        CALL_PHONE_REQUEST_CODE(3);
+        CALL_PHONE_REQUEST_CODE(3),
+        CAMERA_REQUEST_CODE(4);
         private int code;
 
         Permissions(int code){

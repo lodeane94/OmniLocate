@@ -1,4 +1,4 @@
-package com.omnivision.utilities;
+package com.omnivision.Services;
 
 import android.Manifest;
 import android.app.IntentService;

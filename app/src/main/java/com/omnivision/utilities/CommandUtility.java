@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.nfc.Tag;
 import android.util.Log;
 
@@ -108,6 +109,8 @@ public class CommandUtility {
         phoneDao.update(phone);
 
         triggerMissingDeviceAlarm();
+
+        registerLockScreenIntents();
     }
     /**
      * @author lkelly
@@ -144,4 +147,27 @@ public class CommandUtility {
         alarmManager.cancel(pendingIntent);
         Log.d(TAG,"missing device alarm cancelled");
     }
+
+    public static void registerLockScreenIntents(){
+        CommandReceiver commandReceiver = new CommandReceiver();
+
+        IntentFilter lockIntentFilter = new IntentFilter();
+        lockIntentFilter.addAction(Intent.ACTION_SCREEN_ON);
+        lockIntentFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        lockIntentFilter.addAction(Intent.ACTION_USER_PRESENT);
+
+        context.registerReceiver(commandReceiver,lockIntentFilter);
+    }
+/*
+    public static void deregisterLockScreenIntents(){
+        CommandReceiver commandReceiver = new CommandReceiver();
+
+        IntentFilter lockIntentFilter = new IntentFilter();
+        lockIntentFilter.addAction(Intent.ACTION_SCREEN_ON);
+        lockIntentFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        lockIntentFilter.addAction(Intent.ACTION_USER_PRESENT);
+
+        context.unregisterReceiver().registerReceiver(commandReceiver,lockIntentFilter);
+    }*/
+
 }

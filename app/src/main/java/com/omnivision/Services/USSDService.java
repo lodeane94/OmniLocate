@@ -1,4 +1,4 @@
-package com.omnivision.utilities;
+package com.omnivision.Services;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
 import com.omnivision.core.Constants;
+import com.omnivision.utilities.CommandReceiver;
 
 /**
  * Created by Lodeane on 3/5/2017.

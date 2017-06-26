@@ -44,6 +44,8 @@
     <string name="alert_dialog_cancel">Cancel</string>
     <string name="alert_dialog_add">Add</string>
     <string name="activity_login_initial_startup_skip">Skip Initial Setup</string>
+    <string name="device_admin">Device Administrator</string>
+    <string name="device_admin_description">Allows application to be an administrator for this device</string>
     <string-array name="no_of_partner_devices">
         <item>Number Of Partner Devices</item>
         <item>1</item>
