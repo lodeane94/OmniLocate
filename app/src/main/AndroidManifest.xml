@@ -13,8 +13,11 @@
         <receiver
             android:name="com.omnivision.utilities.CommandReceiver">
             <intent-filter>
-                <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <!--<action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />-->
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
             </intent-filter>
         </receiver>
        <!-- <receiver
@@ -64,6 +67,7 @@
     <uses-permission android:name="android.permission.CALL_PHONE"/>
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <!-- Needed only if your app targets Android 5.0 (API level 21) or higher. -->
     <uses-feature android:name="android.hardware.location.gps" />

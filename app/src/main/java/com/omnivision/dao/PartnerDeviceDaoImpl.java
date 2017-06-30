@@ -28,6 +28,13 @@ public class PartnerDeviceDaoImpl implements IPartnerDeviceDao {
     }
 
     @Override
+    public void insertAll(List<PartnerDevice> partnerDevices) {
+        for(PartnerDevice partnerDevice : partnerDevices){
+            partnerDeviceDao.insert(partnerDevice);
+        }
+    }
+
+    @Override
     public List<PartnerDevice> findAll() {
         return partnerDeviceDao.loadAll();
     }
@@ -41,6 +48,14 @@ public class PartnerDeviceDaoImpl implements IPartnerDeviceDao {
     public PartnerDevice findByValue(String value) {
         QueryBuilder<PartnerDevice> queryBuilder = partnerDeviceDao.queryBuilder();
         queryBuilder.where(PartnerDeviceDao.Properties.PartnerDeviceNum.eq(value));
+        return queryBuilder.unique();
+    }
+
+    @Override
+    public PartnerDevice findPrimaryDevice(Long ownerId) {
+        QueryBuilder<PartnerDevice> queryBuilder = partnerDeviceDao.queryBuilder();
+        queryBuilder.where(PartnerDeviceDao.Properties.IsPrimaryFlag.eq(true),
+                PartnerDeviceDao.Properties.PhoneId.eq(ownerId));
         return queryBuilder.unique();
     }
 

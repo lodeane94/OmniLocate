@@ -26,6 +26,8 @@ public class Phone implements IPhone {
     private String deviceStatus;
     @ToMany(referencedJoinProperty = "id")
     private List<PartnerDevice> partnerDevicesNums = new ArrayList<PartnerDevice>();
+    @ToMany(referencedJoinProperty = "phoneId")
+    private List<SimCardChangeHistory> simCardChangeHistories = new ArrayList<SimCardChangeHistory>();
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
@@ -119,6 +121,15 @@ public class Phone implements IPhone {
     public List<PartnerDevice> getPartnerDevicesNumbers(){
         return this.partnerDevicesNums;
     }
+
+    public void setSimCards(List<SimCard> simCards) {
+        this.simCards = simCards;
+    }
+
+    public void setPartnerDevicesNums(List<PartnerDevice> partnerDevicesNums) {
+        this.partnerDevicesNums = partnerDevicesNums;
+    }
+    
 
     public static Boolean isAPartnerDeviceNumber(String cellNum){
         return true; //TODO implement the validation of partner device numbers of a phone
@@ -216,6 +227,35 @@ public class Phone implements IPhone {
     @Generated(hash = 1265663133)
     public synchronized void resetSimCards() {
         simCards = null;
+    }
+
+    /**
+     * To-many relationship, resolved on first access (and after reset).
+     * Changes to to-many relations are not persisted, make changes to the target entity.
+     */
+    @Generated(hash = 685426358)
+    public List<SimCardChangeHistory> getSimCardChangeHistories() {
+        if (simCardChangeHistories == null) {
+            final DaoSession daoSession = this.daoSession;
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            SimCardChangeHistoryDao targetDao = daoSession.getSimCardChangeHistoryDao();
+            List<SimCardChangeHistory> simCardChangeHistoriesNew = targetDao
+                    ._queryPhone_SimCardChangeHistories(id);
+            synchronized (this) {
+                if (simCardChangeHistories == null) {
+                    simCardChangeHistories = simCardChangeHistoriesNew;
+                }
+            }
+        }
+        return simCardChangeHistories;
+    }
+
+    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+    @Generated(hash = 937043647)
+    public synchronized void resetSimCardChangeHistories() {
+        simCardChangeHistories = null;
     }
 
     /** called by internal mechanisms, do not call yourself. */

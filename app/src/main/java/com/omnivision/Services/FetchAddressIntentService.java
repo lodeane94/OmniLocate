@@ -171,7 +171,7 @@ public class FetchAddressIntentService extends IntentService implements GoogleAp
                 Log.e(TAG, errorMessage);
             }
             locationMap.put(Constants.General.RECEIVER_RESULT_MESSAGE.name(), String.valueOf(Constants.Location.FAILURE_RESULT));
-            deliverResultToReceiver(locationMap);
+            //deliverResultToReceiver(locationMap);
         }else{
             String addressLine = "";
             Address address = addresses.get(0);
@@ -185,8 +185,9 @@ public class FetchAddressIntentService extends IntentService implements GoogleAp
             locationMap.put(Constants.General.RECEIVER_RESULT_MESSAGE.name(), String.valueOf(Constants.Location.SUCCESS_RESULT));
             locationMap.put(Constants.Location.ADDRESS_LINE,addressLine);
             Log.i(TAG,Constants.Location.ADDRESS_FOUND);
-            deliverResultToReceiver(locationMap);
+            //deliverResultToReceiver(locationMap);
         }
+        deliverResultToReceiver(locationMap);
     }
 
     @Override
@@ -205,13 +206,15 @@ public class FetchAddressIntentService extends IntentService implements GoogleAp
         * receive the latest recent location. if it is false then it will receive the last known
         * location*/
         private boolean latestLocationChecked = false;
+        private Location latestLocation = null;
         @Override
         public void onLocationChanged(Location location) {
             Log.i(TAG, "lat " + location.getLatitude());
             Log.i(TAG, "lng " + location.getLongitude());
 
             latestLocationChecked = true;
-            processDeviceLocation(location);
+            latestLocation = location;
+            //processDeviceLocation(location);removed since this will be called as soon as the location changes
         }
 
 
@@ -228,6 +231,8 @@ public class FetchAddressIntentService extends IntentService implements GoogleAp
             if(!latestLocationChecked){//onLocationChange did not fire i.e. location did not change
                 mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiclient);
                 processDeviceLocation(mLastLocation);
+            }else if(latestLocation != null){
+                processDeviceLocation(latestLocation);
             }
         }
 

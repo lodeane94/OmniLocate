@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.Tag;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.omnivision.core.Constants;
@@ -14,10 +15,13 @@ import com.omnivision.core.Phone;
 import com.omnivision.core.PhoneDao;
 import com.omnivision.core.PrepaidCredit;
 import com.omnivision.core.PrepaidCreditDao;
+import com.omnivision.core.SimCardChangeHistory;
 import com.omnivision.dao.IPhoneDao;
 import com.omnivision.dao.IPrepaidCreditDao;
+import com.omnivision.dao.ISimCardChangeHistDao;
 import com.omnivision.dao.PhoneDaoImpl;
 import com.omnivision.dao.PrepaidCreditDaoImpl;
+import com.omnivision.dao.SimCardChangeHistDaoImpl;
 import com.tablayoutexample.lkelly.omnivision.OmniLocateApplication;
 
 import org.greenrobot.greendao.query.QueryBuilder;
@@ -84,9 +88,9 @@ public class CommandUtility {
      * @return
      * */
     public static void initiateLostDeviceProtocol() throws Exception{
-        Long ownerId = Long.parseLong(userDetails.get(Constants.SessionManager.PHONE_ID));
+        //Long ownerId = Long.parseLong(userDetails.get(Constants.SessionManager.PHONE_ID));
+        Phone phone = OmniLocateApplication.getPhoneInstance();
         IPhoneDao phoneDao = new PhoneDaoImpl(daoSession);
-        Phone phone = phoneDao.find(ownerId);
         phone.setDeviceStatus(Constants.DeviceStatus.LOST);
 
         phoneDao.update(phone);
@@ -101,9 +105,9 @@ public class CommandUtility {
      * @return
      * */
     public static void initiateStolenDeviceProtocol() throws Exception{
-        Long ownerId = Long.parseLong(userDetails.get(Constants.SessionManager.PHONE_ID));
+        //Long ownerId = Long.parseLong(userDetails.get(Constants.SessionManager.PHONE_ID));
+        Phone phone = OmniLocateApplication.getPhoneInstance();
         IPhoneDao phoneDao = new PhoneDaoImpl(daoSession);
-        Phone phone = phoneDao.find(ownerId);
         phone.setDeviceStatus(Constants.DeviceStatus.STOLEN);
 
         phoneDao.update(phone);
@@ -112,6 +116,61 @@ public class CommandUtility {
 
         registerLockScreenIntents();
     }
+
+    /**
+     * @author lkelly
+     * @desc protocol is to send the new sim's information to the primary partner device
+     *       and to update the web portal with this new information
+     * @params
+     * @return
+     * */
+    public static void initiateSimChangedProtocol() throws Exception{
+       // Long ownerId = Long.parseLong(userDetails.get(Constants.SessionManager.PHONE_ID));
+        Phone phone = OmniLocateApplication.getPhoneInstance();
+        IPhoneDao phoneDao = new PhoneDaoImpl(daoSession);
+        ISimCardChangeHistDao simCardChangeHistDao = new SimCardChangeHistDaoImpl(daoSession);
+
+        String simSerialNum = findSimSerial();
+        String simNumber = findSimNumber();
+        /*sim number is not always available hence mechanism will be provided
+        * to update this record by the user*/
+        if (simNumber == null) simNumber = "0000000";
+
+        SimCardChangeHistory simCardChangeHistory = new SimCardChangeHistory(phone.getId(),simSerialNum,simNumber);
+        simCardChangeHistDao.insert(simCardChangeHistory);
+        //TODO: if settings is set to activate reserved credit upon sim change, then activate credit
+        activateCredit();
+
+        String modNotifMsg = Constants.SystemNotifMessages.SIMCARD_CHANGED + "\n New number registered: "+ simNumber;
+        NotificationUtility.smsNotifBroadcast(modNotifMsg);
+        //NotificationUtility.webNotifBroadcast();
+    }
+
+    /**
+     * @author lkelly
+     * @desc find the serial number registered to the simcard
+     * @params
+     * @return
+     * */
+    public static String findSimSerial() throws Exception{
+        //receiving simcard serial number
+        TelephonyManager telephonyManager = (TelephonyManager)context.getSystemService(context.TELECOM_SERVICE);
+        return telephonyManager.getSimSerialNumber();
+    }
+
+
+    /**
+     * @author lkelly
+     * @desc find the simcard number registered to the simcard
+     * @params
+     * @return
+     * */
+    public static String findSimNumber() throws Exception{
+        //receiving simcard number
+        TelephonyManager telephonyManager = (TelephonyManager)context.getSystemService(context.TELECOM_SERVICE);
+        return telephonyManager.getLine1Number();
+    }
+
     /**
      * @author lkelly
      * @desc starts and repeat the activities that should be executed if the device is missing

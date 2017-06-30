@@ -13,9 +13,11 @@ import java.util.List;
 
 public interface IPartnerDeviceDao {
     void insert(PartnerDevice partnerDevice);
+    void insertAll(List<PartnerDevice> partnerDevices);
     List<PartnerDevice> findAll();
     List<PartnerDevice> findAllByOwnerId(Long ownerId);
     PartnerDevice findByValue(String value);
+    PartnerDevice findPrimaryDevice(Long ownerId);
     QueryBuilder<PartnerDevice> findByQuery();
     PartnerDevice find(Long id);
     void update(PartnerDevice partnerDevice);

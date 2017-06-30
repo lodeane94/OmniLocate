@@ -66,6 +66,7 @@ public class Constants {
         public static final String SMS_DELIVERED = "SMS_DELIVERED";
         public static  final String USSD_RESULTS = "USSD_RESULTS";
         public static  final String MISSING_DEVICE_ALARM_STARTED = "MISSING_DEVICE_ALARM_STARTED";
+        public static final String BOOT_COMPLETED = "android.intent.action.BOOT_COMPLETED";
     }
 
     public static final class Location{
@@ -134,6 +135,10 @@ public class Constants {
         public static final String PREPAID_CREDIT = "PREPAID_CREDIT";
         public static final String USER = "USER";
         public static final String PARTNER_DEVICE = "PARTNER_DEVICE";
+    }
+
+    public static final class SystemNotifMessages{
+        public static final String SIMCARD_CHANGED = "A different simcard has been inserted in device";
     }
 
 }

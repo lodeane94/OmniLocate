@@ -17,6 +17,7 @@ import java.util.List;
 public class SimCard implements ISimCard {
     @Id
     private long id;
+    private String serialNumber;
     private long phoneId;
     private Long simNetworkId;
     @ToOne(joinProperty = "phoneId")
@@ -39,18 +40,20 @@ public class SimCard implements ISimCard {
     @Generated(hash = 1159325565)
     private transient Long simNetwork__resolvedKey;
 
-    public SimCard(long id, long phoneId, String number, String areaCode, double smsCost,long simNetworkId) {
+    public SimCard(long id, long phoneId, String number, String areaCode, double smsCost,long simNetworkId,String serialNumber) {
         this.id = id;
         this.phoneId = phoneId;
         this.number = number;
         this.areaCode = areaCode;
         this.smsCost = smsCost;
         this.simNetworkId = simNetworkId;
+        this.serialNumber = serialNumber;
     }
 
-    @Generated(hash = 463051398)
-    public SimCard(long id, long phoneId, Long simNetworkId, String number, String areaCode, double smsCost) {
+    @Generated(hash = 1036575371)
+    public SimCard(long id, String serialNumber, long phoneId, Long simNetworkId, String number, String areaCode, double smsCost) {
         this.id = id;
+        this.serialNumber = serialNumber;
         this.phoneId = phoneId;
         this.simNetworkId = simNetworkId;
         this.number = number;
@@ -70,6 +73,14 @@ public class SimCard implements ISimCard {
     @Override
     public long getId() {
         return this.id;
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
     }
 
     @Override

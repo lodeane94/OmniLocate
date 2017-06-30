@@ -23,9 +23,11 @@ import com.omnivision.core.SimCard;
 import com.omnivision.core.SimNetwork;
 import com.omnivision.core.User;
 import com.omnivision.core.UserDao;
+import com.omnivision.dao.IPartnerDeviceDao;
 import com.omnivision.dao.ISimCardDao;
 import com.omnivision.dao.ISimNetworkDao;
 import com.omnivision.dao.JSONHelper;
+import com.omnivision.dao.PartnerDeviceDaoImpl;
 import com.omnivision.dao.SimCardDaoImpl;
 import com.omnivision.dao.SimNetworkDaoImpl;
 import com.omnivision.utilities.PartnerDevicesAdapter;
@@ -62,6 +64,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
     private DaoSession daoSession;
     private ISimNetworkDao simNetworkDao;
     private ISimCardDao simCardDao;
+    private IPartnerDeviceDao partnerDeviceDao;
 
     private Long phoneId;
     @Override
@@ -77,6 +80,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
         daoSession = OmniLocateApplication.getSession(this);
         simCardDao = new SimCardDaoImpl(daoSession);
         simNetworkDao = new SimNetworkDaoImpl(daoSession);
+        partnerDeviceDao = new PartnerDeviceDaoImpl(daoSession);
 
         //activity view initialization
         initializeCountrySpinner();
@@ -108,9 +112,15 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
             addPartnerDeviceBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    PartnerDevice partnerDevice;
                 /*adding the partner devices numbers to the list to be persisted*/
                     partnerDevicesAddedCount++;
-                    PartnerDevice partnerDevice = new PartnerDevice(phoneId,partnerDeviceNumEt.getText().toString(),false);
+                    boolean isPrimaryDeviceFlag = true;
+                    //defaulting first partner device to be the primary partner device
+                    if(partnerDevicesAddedCount != 1)
+                        isPrimaryDeviceFlag = false;
+
+                    partnerDevice = new PartnerDevice(phoneId,partnerDeviceNumEt.getText().toString(),isPrimaryDeviceFlag);
                     partnerDevicesCellNumbers.add(partnerDevice);
                     partnerDevicesCellNumAdapter.notifyDataSetChanged();
                     //disable add button to restrict partner devices total
@@ -204,12 +214,16 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
         try{
             Log.i(TAG,"setting user information");
             //TODO add validation to all fields
-            DaoSession daoSession = OmniLocateApplication.getSession(DeviceRegistrationActivity.this);//initializing dao session
+            //DaoSession daoSession = OmniLocateApplication.getSession(DeviceRegistrationActivity.this);//initializing dao session
             Long simId = Long.parseLong(String.valueOf(System.currentTimeMillis())
                     .substring(1,10));
             String cellNum = cellNumEt.getText().toString();
             String selectedCountry = countrySpinner.getSelectedItem().toString();
             String selectedSimNetworkProvider = simNetworkProviderSpinner.getSelectedItem().toString();
+
+            //receiving simcard serial number
+            TelephonyManager telephonyManager = (TelephonyManager)getSystemService(TELECOM_SERVICE);
+            String simSn = telephonyManager.getSimSerialNumber();
 
             SimNetwork simNetwork = simNetworkDao.findByValue(selectedSimNetworkProvider,selectedCountry);
             if(simNetwork == null)
@@ -217,17 +231,20 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
 
             Phone phone = new Phone(phoneId,cellNum,selectedCountry, Constants.DeviceStatus.OK,partnerDevicesCellNumbers);//partner devices number not set here
             User user = new User(emailEt.getText().toString(),passwordEt.getText().toString(),phone);//TODO hash password in database
-            SimCard simCard = new SimCard(simId,phoneId,cellNum, cellNum.substring(0,3),0.00,simNetwork.getId());
+            SimCard simCard = new SimCard(simId,phoneId,cellNum, cellNum.substring(0,3),0.00,simNetwork.getId(),simSn);
             //persisting user to the omnilocate database.
             //TODO validate user i.e. if user already exits give appropriate message and refer user to the remember me functionality
             Log.i(TAG,"persisting user to the omnisecurity database");
             UserDao userDao = daoSession.getUserDao();
             userDao.insert(user);
+
             phone.setUserId(userDao.getKey(user));
             daoSession.insert(phone);//TODO create phoneDAO and replace
 
-            simCardDao.deleteAll();
+            //simCardDao.deleteAll();//TODO remove code
             simCardDao.insert(simCard);
+            //inserting all partner devices
+            partnerDeviceDao.insertAll(partnerDevicesCellNumbers);
 
             //persist userId and generated phone if to the device
             PhoneManager phoneManager = new PhoneManager(this);

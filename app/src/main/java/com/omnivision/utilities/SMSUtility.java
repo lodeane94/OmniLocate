@@ -167,7 +167,7 @@ public class SMSUtility {
      * */
     public static ArrayList<String> divideMessage(String msg, String separateMsg){
         Log.i(TAG,"divideMessage:init");
-
+        //TODO reduce code by calling original dividemessage function then adding separateMsg
         double smsBoundary = 159;
         int lastIndex = 0;
         double divisionAmt = 0;
