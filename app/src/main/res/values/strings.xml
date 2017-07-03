@@ -39,6 +39,7 @@
     <string name="remove">Remove Item</string>
     <string name="alert_dialog_message_remove_credit">Do you want to remove ?</string>
     <string name="alert_dialog_message_add_credit">Enter USSD code and Voucher Number eg.(*121*xxxxx..# :</string>
+    <string name="alert_dialog_message_add_partner_device">Add partner device number</string>
     <string name="alert_dialog_yes">Yes</string>
     <string name="alert_dialog_no">No</string>
     <string name="alert_dialog_cancel">Cancel</string>
@@ -63,5 +64,13 @@
         <item>Check Balance</item>
         <item>Add Credit</item>
     </string-array>
+    <string-array name="partner_device_frag_cxt_menu">
+        <item>View Partner Device</item>
+        <item>Make Primary Partner Device</item>
+        <item>Delete</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

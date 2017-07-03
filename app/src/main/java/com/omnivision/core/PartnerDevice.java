@@ -150,6 +150,12 @@ public class PartnerDevice implements IPartnerDevice {
         myDao.update(this);
     }
 
+    /** returns the value of the object : partner device number*/
+    @Override
+    public String toString(){
+        return partnerDeviceNum;
+    }
+
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 1823124035)
     public void __setDaoSession(DaoSession daoSession) {

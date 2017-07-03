@@ -11,14 +11,18 @@ import android.util.Log;
 
 import com.omnivision.core.Constants;
 import com.omnivision.core.DaoSession;
+import com.omnivision.core.IPartnerDevice;
+import com.omnivision.core.PartnerDevice;
 import com.omnivision.core.Phone;
 import com.omnivision.core.PhoneDao;
 import com.omnivision.core.PrepaidCredit;
 import com.omnivision.core.PrepaidCreditDao;
 import com.omnivision.core.SimCardChangeHistory;
+import com.omnivision.dao.IPartnerDeviceDao;
 import com.omnivision.dao.IPhoneDao;
 import com.omnivision.dao.IPrepaidCreditDao;
 import com.omnivision.dao.ISimCardChangeHistDao;
+import com.omnivision.dao.PartnerDeviceDaoImpl;
 import com.omnivision.dao.PhoneDaoImpl;
 import com.omnivision.dao.PrepaidCreditDaoImpl;
 import com.omnivision.dao.SimCardChangeHistDaoImpl;
@@ -41,6 +45,7 @@ public class CommandUtility {
     private static Map<String,String> userDetails = sessionManager.getUserDetails();
 
     private static IPrepaidCreditDao prepaidCreditDao = new PrepaidCreditDaoImpl(daoSession);
+    private static IPartnerDeviceDao partnerDeviceDao = new PartnerDeviceDaoImpl(daoSession);
 
     private CommandUtility(){}
 
@@ -216,6 +221,50 @@ public class CommandUtility {
         lockIntentFilter.addAction(Intent.ACTION_USER_PRESENT);
 
         context.registerReceiver(commandReceiver,lockIntentFilter);
+    }
+
+    /**
+     * @author lkelly
+     * @desc deletes phone's partner device
+     * @params partnerDevice
+     * @return
+     * */
+    public static void deletePartnerDevice(PartnerDevice partnerDevice){
+        partnerDeviceDao.delete(partnerDevice);
+    }
+
+    /**
+     * @author lkelly
+     * @desc updates the isPrimaryFlag field on the partner device to true
+     * @params partnerDevice
+     * @return boolean
+     * */
+    public static boolean makePartnerDevicePrimary(PartnerDevice partnerDevice) {
+        if(!partnerDevice.getIsPrimaryFlag()){
+            partnerDevice.setIsPrimaryFlag(true);
+            partnerDeviceDao.update(partnerDevice);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @author lkelly
+     * @desc adds a partner device to the phone
+     * @params partnerDevice
+     * @return boolean
+     * */
+    public static boolean addPartnerDevice(PartnerDevice partnerDevice) {
+        Phone phone = OmniLocateApplication.getPhoneInstance();
+        int partnerDeviceCount = phone.getPartnerDevicesNums().size();
+
+        //phone should not have more than 3 partner devices
+        if(partnerDeviceCount != Constants.Constraints.MAX_PARTNER_DEVICE){
+            partnerDeviceDao.insert(partnerDevice);
+            return true;
+        }
+
+        return false;
     }
 /*
     public static void deregisterLockScreenIntents(){

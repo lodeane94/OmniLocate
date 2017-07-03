@@ -141,4 +141,13 @@ public class Constants {
         public static final String SIMCARD_CHANGED = "A different simcard has been inserted in device";
     }
 
+    public static final class PartnerDeviceContextMenuItems{
+        public static final int VIEW_PARTNER_DEVICE = 0;
+        public static final int MAKE_PARTNER_DEVICE_PRIMARY = 1;
+        public static final int DELETE = 2;
+    }
+
+    public static final class Constraints{
+        public static final int MAX_PARTNER_DEVICE = 3;
+    }
 }

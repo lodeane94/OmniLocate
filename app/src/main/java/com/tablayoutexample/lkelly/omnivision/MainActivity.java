@@ -1,6 +1,7 @@
 package com.tablayoutexample.lkelly.omnivision;
 
 import android.Manifest;
+import android.app.Fragment;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -33,7 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements PartnerDeviceFragment.OnPartnerDeviceFragmentListener {
 
     private CommandReceiver commandReceiver;
     private Button startServiceBtn;
@@ -291,6 +292,7 @@ public class MainActivity extends AppCompatActivity {
                 onHomeSelection(position);
                 break;
             case Constants.Navigation.NavigationPositions.PARTNER_DEVICES:
+                onPartnerDevicesSelection(position);
                 break;
             case Constants.Navigation.NavigationPositions.DEVICE_WIPE:
                 break;
@@ -304,13 +306,11 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * @author lkelly
-     * @desc swaps PrepaidCreditFragment in the main content view of the application
+     * @desc swaps selected fragment into the main content view of the application
      * @params
      * @return
      * */
-    private void onPrepaidCreditSelection(int position) {
-        PrepaidCreditFragment fragment = new PrepaidCreditFragment();
-
+    private void swapFragment(Fragment fragment, int position){
         android.app.FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame,fragment).commit();
 
@@ -318,6 +318,28 @@ public class MainActivity extends AppCompatActivity {
         mDrawerListView.setItemChecked(position,true);
         mTitle = mDrawerTitle = mDrawerTitles[position];
         mDrawerLayout.closeDrawer(mNavigationPaneLayout);
+    }
+
+    /**
+     * @author lkelly
+     * @desc swaps PartnerDeviceFragment in the main content view of the application
+     * @params
+     * @return
+     * */
+    private void onPartnerDevicesSelection(int position) {
+        PartnerDeviceFragment fragment = new PartnerDeviceFragment();
+        swapFragment(fragment,position);
+    }
+
+    /**
+     * @author lkelly
+     * @desc swaps PrepaidCreditFragment in the main content view of the application
+     * @params
+     * @return
+     * */
+    private void onPrepaidCreditSelection(int position) {
+        PrepaidCreditFragment fragment = new PrepaidCreditFragment();
+        swapFragment(fragment,position);
     }
 
     /**
@@ -336,5 +358,10 @@ public class MainActivity extends AppCompatActivity {
         mDrawerListView.setItemChecked(position,true);
         mTitle = mDrawerTitle = mDrawerTitles[position];
         mDrawerLayout.closeDrawer(mNavigationPaneLayout);
+    }
+
+    @Override
+    public void onPartnerDeviceFragmentListener(long partnerDeviceId) {
+
     }
 }
