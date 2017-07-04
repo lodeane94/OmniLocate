@@ -25,7 +25,8 @@ public class Constants {
         SMS_REQUEST_CODE(1),
         ACCESS_FINE_LOCATION_REQUEST_CODE(2),
         CALL_PHONE_REQUEST_CODE(3),
-        CAMERA_REQUEST_CODE(4);
+        CAMERA_REQUEST_CODE(4),
+        READ_PHONE_STATE(5);
         private int code;
 
         Permissions(int code){

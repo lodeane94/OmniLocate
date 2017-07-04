@@ -2,7 +2,7 @@ package com.tablayoutexample.lkelly.omnivision;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -44,7 +44,7 @@ import java.util.Map;
  * @params
  * @return
  * */
-public class PrepaidCreditFragment extends Fragment implements PartnerDeviceFragment.OnSelectedPartnerDeviceFragmentListener {
+public class PrepaidCreditFragment extends Fragment {
     private String TAG = PrepaidCreditFragment.class.getSimpleName();
     public static String ARG_MENU_ITEM_NUMBER = "menu_number";
     public static boolean isGroupExpanded;//used to determine if an item was selected
@@ -364,10 +364,5 @@ public class PrepaidCreditFragment extends Fragment implements PartnerDeviceFrag
      * */
     public String getVoucherNumber(){
         return this.voucherNumber;
-    }
-
-    @Override
-    public void onSelectedPartnerDeviceFragmentListener(long partnerDeviceId) {
-
     }
 }

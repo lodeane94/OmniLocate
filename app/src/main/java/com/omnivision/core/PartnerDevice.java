@@ -12,7 +12,7 @@ import org.greenrobot.greendao.DaoException;
  */
 @Entity
 public class PartnerDevice implements IPartnerDevice {
-    @Id
+    @Id(autoincrement = true)
     private Long id;
     private Long phoneId;
     @ToOne(joinProperty = "phoneId")
@@ -38,12 +38,13 @@ public class PartnerDevice implements IPartnerDevice {
         this.isActive = isActive;
     }
 
-    @Generated(hash = 1661640989)
-    public PartnerDevice(Long id, Long phoneId, Boolean isPrimaryFlag,
+    @Generated(hash = 1352568409)
+    public PartnerDevice(Long id, Long phoneId, Boolean isPrimaryFlag, Boolean isActive,
             String partnerDeviceNum) {
         this.id = id;
         this.phoneId = phoneId;
         this.isPrimaryFlag = isPrimaryFlag;
+        this.isActive = isActive;
         this.partnerDeviceNum = partnerDeviceNum;
     }
 
@@ -164,6 +165,14 @@ public class PartnerDevice implements IPartnerDevice {
     @Override
     public String toString(){
         return partnerDeviceNum;
+    }
+
+    public Boolean getIsActive() {
+        return this.isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
 
     /** called by internal mechanisms, do not call yourself. */

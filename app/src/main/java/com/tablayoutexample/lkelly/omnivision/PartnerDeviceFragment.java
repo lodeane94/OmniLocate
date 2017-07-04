@@ -5,7 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -90,7 +90,7 @@ public class PartnerDeviceFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 PartnerDevice partnerDevice = partnerDevices.get(position);
-                mListener.onSelectedPartnerDeviceFragmentListener(partnerDevice.getId());
+                invokeSelectedPartnerDeviceFragment(partnerDevice.getPartnerDeviceNum());
             }
         });
 
@@ -102,8 +102,8 @@ public class PartnerDeviceFragment extends Fragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu){
         super.onPrepareOptionsMenu(menu);
-        MenuItem callActionItem = menu.findItem(R.id.new_action);
-        callActionItem.setVisible(true);
+        MenuItem newActionItem = menu.findItem(R.id.new_action);
+        newActionItem.setVisible(true);
     }
 
     @Override
@@ -136,7 +136,7 @@ public class PartnerDeviceFragment extends Fragment {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
         switch (item.getItemId()){
             case Constants.PartnerDeviceContextMenuItems.VIEW_PARTNER_DEVICE:
-                invokeSelectedPartnerDeviceFragment(partnerDevices.get(info.position).getId());
+                invokeSelectedPartnerDeviceFragment(partnerDevices.get(info.position).getPartnerDeviceNum());
                 break;
             case Constants.PartnerDeviceContextMenuItems.MAKE_PARTNER_DEVICE_PRIMARY:
                 makePartnerDevicePrimary(partnerDevices.get(info.position));
@@ -154,8 +154,8 @@ public class PartnerDeviceFragment extends Fragment {
      * @params partnerDevice
      * @return
      * */
-    private void invokeSelectedPartnerDeviceFragment(long partnerDeviceId) {
-        mListener.onSelectedPartnerDeviceFragmentListener(partnerDeviceId);
+    private void invokeSelectedPartnerDeviceFragment(String partnerDeviceNum) {
+        mListener.onSelectedPartnerDeviceFragmentListener(partnerDeviceNum);
     }
 
     /**
@@ -290,6 +290,6 @@ public class PartnerDeviceFragment extends Fragment {
      */
     public interface OnSelectedPartnerDeviceFragmentListener {
 
-        void onSelectedPartnerDeviceFragmentListener(long partnerDeviceId);
+        void onSelectedPartnerDeviceFragmentListener(String partnerDeviceNum);
     }
 }

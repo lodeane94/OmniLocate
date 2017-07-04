@@ -1,5 +1,6 @@
 package com.tablayoutexample.lkelly.omnivision;
 
+import android.Manifest;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import com.omnivision.dao.PartnerDeviceDaoImpl;
 import com.omnivision.dao.SimCardDaoImpl;
 import com.omnivision.dao.SimNetworkDaoImpl;
 import com.omnivision.Adapters.PartnerDevicesAdapter;
+import com.omnivision.utilities.PermissionManager;
 import com.omnivision.utilities.PhoneManager;
 
 import org.json.JSONArray;
@@ -218,10 +220,15 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
             String cellNum = cellNumEt.getText().toString();
             String selectedCountry = countrySpinner.getSelectedItem().toString();
             String selectedSimNetworkProvider = simNetworkProviderSpinner.getSelectedItem().toString();
+            String simSn;
 
-            //receiving simcard serial number
-            TelephonyManager telephonyManager = (TelephonyManager)getSystemService(TELECOM_SERVICE);
-            String simSn = telephonyManager.getSimSerialNumber();
+            PermissionManager.check(this, Manifest.permission.READ_PHONE_STATE, Constants.Permissions.READ_PHONE_STATE.getCode());
+            if(PermissionManager.hasPermission(this,Manifest.permission.READ_PHONE_STATE)) {
+                //receiving simcard serial number
+                TelephonyManager telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+                simSn = telephonyManager.getSimSerialNumber();
+            }else
+                throw new Exception("Device does not have: READ_PHONE_STATE permission");
 
             SimNetwork simNetwork = simNetworkDao.findByValue(selectedSimNetworkProvider,selectedCountry);
             if(simNetwork == null)

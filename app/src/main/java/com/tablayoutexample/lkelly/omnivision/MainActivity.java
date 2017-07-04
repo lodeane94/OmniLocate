@@ -1,7 +1,7 @@
 package com.tablayoutexample.lkelly.omnivision;
 
 import android.Manifest;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.IntentFilter;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -305,11 +305,11 @@ public class MainActivity extends AppCompatActivity implements PartnerDeviceFrag
      * @return
      * */
     private void swapFragment(Fragment fragment, int position){
-        android.app.FragmentManager fragmentManager = getFragmentManager();
+        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame,fragment).commit();
 
         //update selected item and title, then close the drawer
-        mDrawerListView.setItemChecked(position,true);
+        mDrawerListView.setItemChecked(position, true);
         mTitle = mDrawerTitle = mDrawerTitles[position];
         mDrawerLayout.closeDrawer(mNavigationPaneLayout);
     }
@@ -354,8 +354,20 @@ public class MainActivity extends AppCompatActivity implements PartnerDeviceFrag
         mDrawerLayout.closeDrawer(mNavigationPaneLayout);
     }
 
+    /**
+     * @author lkelly
+     * @desc method is called when an item is selected on the PartnerDeviceFragment
+     *       it will swap the SelectedPartnerDeviceFragment into the frame layout
+     * @params partnerDeviceNum
+     * @return
+     * */
     @Override
-    public void onSelectedPartnerDeviceFragmentListener(long partnerDeviceId) {
+    public void onSelectedPartnerDeviceFragmentListener(String partnerDeviceNum) {
         SelectedPartnerDeviceFragment fragment = new SelectedPartnerDeviceFragment();
+        SelectedPartnerDeviceFragment.ARG_PARTNER_DEVICE_NUMBER = partnerDeviceNum;
+
+        //keep navigation drawer at the partner devices position
+        int partnerDevicePosition = Constants.Navigation.NavigationPositions.PARTNER_DEVICES;
+        swapFragment(fragment,partnerDevicePosition);
     }
 }
