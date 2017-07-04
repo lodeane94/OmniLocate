@@ -28,6 +28,8 @@ public class Phone implements IPhone {
     private List<PartnerDevice> partnerDevicesNums = new ArrayList<PartnerDevice>();
     @ToMany(referencedJoinProperty = "phoneId")
     private List<SimCardChangeHistory> simCardChangeHistories = new ArrayList<SimCardChangeHistory>();
+    @ToMany(referencedJoinProperty = "phoneId")
+    private List<CommandHistory> commandHistories = new ArrayList<CommandHistory>();
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
@@ -256,6 +258,34 @@ public class Phone implements IPhone {
     @Generated(hash = 937043647)
     public synchronized void resetSimCardChangeHistories() {
         simCardChangeHistories = null;
+    }
+
+    /**
+     * To-many relationship, resolved on first access (and after reset).
+     * Changes to to-many relations are not persisted, make changes to the target entity.
+     */
+    @Generated(hash = 1628706899)
+    public List<CommandHistory> getCommandHistories() {
+        if (commandHistories == null) {
+            final DaoSession daoSession = this.daoSession;
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            CommandHistoryDao targetDao = daoSession.getCommandHistoryDao();
+            List<CommandHistory> commandHistoriesNew = targetDao._queryPhone_CommandHistories(id);
+            synchronized (this) {
+                if (commandHistories == null) {
+                    commandHistories = commandHistoriesNew;
+                }
+            }
+        }
+        return commandHistories;
+    }
+
+    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+    @Generated(hash = 575381629)
+    public synchronized void resetCommandHistories() {
+        commandHistories = null;
     }
 
     /** called by internal mechanisms, do not call yourself. */

@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,32 +14,36 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.omnivision.Adapters.CmdHistoryRecyclerViewAdapter;
+import com.omnivision.core.CommandHistory;
 import com.omnivision.core.DaoSession;
 import com.omnivision.core.PartnerDevice;
+import com.omnivision.dao.CommandHistoryDaoImpl;
+import com.omnivision.dao.ICommandHistoryDao;
 import com.omnivision.dao.IPartnerDeviceDao;
 import com.omnivision.dao.PartnerDeviceDaoImpl;
-import com.omnivision.utilities.PartnerDevicesAdapter;
+import com.omnivision.Adapters.PartnerDevicesAdapter;
 import com.omnivision.utilities.SessionManager;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class SelectedPartnerDeviceFragment extends Fragment {
 
-    long phoneId;
     private String TAG = SelectedPartnerDeviceFragment.class.getSimpleName();
-    public static long ARG_PARTNER_DEVICE_ID;
-    private ListView partnerDeviceLv;
-    private PartnerDevicesAdapter partnerDeviceAdapter;
-    private PartnerDevice partnerDevices;
+   // public static long ARG_PARTNER_DEVICE_ID;
+    public static String ARG_PARTNER_DEVICE_NUMBER;
+   // private PartnerDevice partnerDevice;
+
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     private HashMap<String,String> userDetails;
     private DaoSession daoSession;
     private SessionManager sessionManager;
 
-    // private IPhoneDao phoneDao;
-    private IPartnerDeviceDao partnerDeviceDao;
+    private ICommandHistoryDao commandHistoryDao;
     private Context context;
 
     private OnFragmentInteractionListener mListener;
@@ -58,9 +64,9 @@ public class SelectedPartnerDeviceFragment extends Fragment {
                 sessionManager = new SessionManager(context);
                 //setting user details
                 userDetails = sessionManager.getUserDetails();
-                partnerDeviceDao = new PartnerDeviceDaoImpl(daoSession);
+                commandHistoryDao = new CommandHistoryDaoImpl(daoSession);
             }catch (Exception ex){
-                String errMessage = "No partner devices found for this device";
+                String errMessage = "Error occurred while initializing";
                 Log.e(TAG,errMessage + "\n"+ex.getLocalizedMessage());
                 Toast.makeText(context,errMessage,Toast.LENGTH_LONG);
             }
@@ -70,8 +76,16 @@ public class SelectedPartnerDeviceFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        List<CommandHistory> commandHistoriesByIssuer = commandHistoryDao.getAllByCmdIssuer(ARG_PARTNER_DEVICE_NUMBER);
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_selected_partner_device, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_selected_partner_device, container, false);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.cmd_history_rv);
+        mRecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(context);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mAdapter = new CmdHistoryRecyclerViewAdapter(commandHistoriesByIssuer);
+
+        return rootView;
     }
 
     @Override

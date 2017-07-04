@@ -1,4 +1,4 @@
-package com.omnivision.utilities;
+package com.omnivision.Adapters;
 
 import android.content.Context;
 import android.support.annotation.LayoutRes;

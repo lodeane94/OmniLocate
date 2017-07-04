@@ -2,103 +2,99 @@ package com.omnivision.core;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.ToOne;
-import org.greenrobot.greendao.annotation.Unique;
+import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
+import org.greenrobot.greendao.annotation.NotNull;
 
 /**
- * Created by lkelly on 3/18/2017.
+ * Created by Lodeane on 4/7/2017.
  */
 @Entity
-public class PartnerDevice implements IPartnerDevice {
+public class CommandHistory {
     @Id
-    private Long id;
-    private Long phoneId;
+    private long id;
+    private long phoneId;
     @ToOne(joinProperty = "phoneId")
     private Phone phone;
-    private Boolean isPrimaryFlag;
-    private Boolean isActive;
-    @Unique
-    private String partnerDeviceNum;
+    private String cmd;
+    private String dateIssued;
+    private String issuedBy;
+    //TODO add referencial constraints for the partner devices
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
     /** Used for active entity operations. */
-    @Generated(hash = 718368596)
-    private transient PartnerDeviceDao myDao;
+    @Generated(hash = 1124907004)
+    private transient CommandHistoryDao myDao;
     @Generated(hash = 457073469)
     private transient Long phone__resolvedKey;
 
-
-    public PartnerDevice(Long phoneId, String partnerDeviceNum, Boolean isPrimaryFlag, Boolean isActive) {
+    public CommandHistory(long phoneId, String cmd, String dateIssued, String issuedBy) {
         this.phoneId = phoneId;
-        this.partnerDeviceNum = partnerDeviceNum;
-        this.isPrimaryFlag = isPrimaryFlag;
-        this.isActive = isActive;
+        this.cmd = cmd;
+        this.dateIssued = dateIssued;
+        this.issuedBy = issuedBy;
     }
 
-    @Generated(hash = 1661640989)
-    public PartnerDevice(Long id, Long phoneId, Boolean isPrimaryFlag,
-            String partnerDeviceNum) {
+    @Generated(hash = 853884199)
+    public CommandHistory(long id, long phoneId, String cmd, String dateIssued,
+            String issuedBy) {
         this.id = id;
         this.phoneId = phoneId;
-        this.isPrimaryFlag = isPrimaryFlag;
-        this.partnerDeviceNum = partnerDeviceNum;
+        this.cmd = cmd;
+        this.dateIssued = dateIssued;
+        this.issuedBy = issuedBy;
     }
 
-    @Generated(hash = 121553696)
-    public PartnerDevice() {
+    @Generated(hash = 676261819)
+    public CommandHistory() {
     }
 
-    @Override
-    public void setId(Long id) {
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
         this.id = id;
     }
 
-    @Override
-    public void setPartnerDeviceNum(String partnerDeviceNum) {
-        this.partnerDeviceNum = partnerDeviceNum;
+    public long getPhoneId() {
+        return phoneId;
     }
 
-    @Override
-    public Long getId() {
-        return this.id;
-    }
-
-    @Override
-    public String getPartnerDeviceNum() {
-        return this.partnerDeviceNum;
-    }
-
-    public Long getPhoneId() {
-        return this.phoneId;
-    }
-
-    public void setPhoneId(Long phoneId) {
+    public void setPhoneId(long phoneId) {
         this.phoneId = phoneId;
     }
 
-    public Boolean getIsPrimaryFlag() {
-        return this.isPrimaryFlag;
+    public String getCmd() {
+        return cmd;
     }
 
-    public void setIsPrimaryFlag(Boolean isPrimaryFlag) {
-        this.isPrimaryFlag = isPrimaryFlag;
+    public void setCmd(String cmd) {
+        this.cmd = cmd;
     }
 
-    public Boolean getActive() {
-        return isActive;
+    public String getDateIssued() {
+        return dateIssued;
     }
 
-    public void setActive(Boolean active) {
-        isActive = active;
+    public void setDateIssued(String dateIssued) {
+        this.dateIssued = dateIssued;
+    }
+
+    public String getIssuedBy() {
+        return issuedBy;
+    }
+
+    public void setIssuedBy(String issuedBy) {
+        this.issuedBy = issuedBy;
     }
 
     /** To-one relationship, resolved on first access. */
-    @Generated(hash = 2078921422)
+    @Generated(hash = 398581896)
     public Phone getPhone() {
-        Long __key = this.phoneId;
+        long __key = this.phoneId;
         if (phone__resolvedKey == null || !phone__resolvedKey.equals(__key)) {
             final DaoSession daoSession = this.daoSession;
             if (daoSession == null) {
@@ -115,11 +111,15 @@ public class PartnerDevice implements IPartnerDevice {
     }
 
     /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1187165439)
-    public void setPhone(Phone phone) {
+    @Generated(hash = 1952452884)
+    public void setPhone(@NotNull Phone phone) {
+        if (phone == null) {
+            throw new DaoException(
+                    "To-one property 'phoneId' has not-null constraint; cannot set to-one to null");
+        }
         synchronized (this) {
             this.phone = phone;
-            phoneId = phone == null ? null : phone.getId();
+            phoneId = phone.getId();
             phone__resolvedKey = phoneId;
         }
     }
@@ -160,16 +160,10 @@ public class PartnerDevice implements IPartnerDevice {
         myDao.update(this);
     }
 
-    /** returns the value of the object : partner device number*/
-    @Override
-    public String toString(){
-        return partnerDeviceNum;
-    }
-
     /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1823124035)
+    @Generated(hash = 374077705)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getPartnerDeviceDao() : null;
+        myDao = daoSession != null ? daoSession.getCommandHistoryDao() : null;
     }
 }

@@ -1,6 +1,5 @@
 package com.tablayoutexample.lkelly.omnivision;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,7 +29,7 @@ import com.omnivision.dao.JSONHelper;
 import com.omnivision.dao.PartnerDeviceDaoImpl;
 import com.omnivision.dao.SimCardDaoImpl;
 import com.omnivision.dao.SimNetworkDaoImpl;
-import com.omnivision.utilities.PartnerDevicesAdapter;
+import com.omnivision.Adapters.PartnerDevicesAdapter;
 import com.omnivision.utilities.PhoneManager;
 
 import org.json.JSONArray;
@@ -39,7 +38,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class DeviceRegistrationActivity extends AppCompatActivity {
     private static final String TAG = DeviceRegistrationActivity.class.getSimpleName() ;
@@ -120,7 +118,7 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
                     if(partnerDevicesAddedCount != 1)
                         isPrimaryDeviceFlag = false;
 
-                    partnerDevice = new PartnerDevice(phoneId,partnerDeviceNumEt.getText().toString(),isPrimaryDeviceFlag);
+                    partnerDevice = new PartnerDevice(phoneId,partnerDeviceNumEt.getText().toString(),isPrimaryDeviceFlag,true);
                     partnerDevicesCellNumbers.add(partnerDevice);
                     partnerDevicesCellNumAdapter.notifyDataSetChanged();
                     //disable add button to restrict partner devices total

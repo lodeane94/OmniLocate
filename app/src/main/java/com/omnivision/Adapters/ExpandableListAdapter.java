@@ -1,4 +1,4 @@
-package com.omnivision.utilities;
+package com.omnivision.Adapters;
 
 import android.app.Activity;
 import android.app.AlertDialog;

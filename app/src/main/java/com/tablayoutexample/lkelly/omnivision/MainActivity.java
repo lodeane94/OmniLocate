@@ -2,12 +2,7 @@ package com.tablayoutexample.lkelly.omnivision;
 
 import android.Manifest;
 import android.app.Fragment;
-import android.app.admin.DevicePolicyManager;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -24,7 +19,6 @@ import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
-import com.omnivision.Services.CameraService;
 import com.omnivision.core.Constants;
 import com.omnivision.utilities.CommandReceiver;
 import com.omnivision.utilities.PermissionManager;
@@ -34,7 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements PartnerDeviceFragment.OnPartnerDeviceFragmentListener {
+public class MainActivity extends AppCompatActivity implements PartnerDeviceFragment.OnSelectedPartnerDeviceFragmentListener {
 
     private CommandReceiver commandReceiver;
     private Button startServiceBtn;
@@ -361,7 +355,7 @@ public class MainActivity extends AppCompatActivity implements PartnerDeviceFrag
     }
 
     @Override
-    public void onPartnerDeviceFragmentListener(long partnerDeviceId) {
-
+    public void onSelectedPartnerDeviceFragmentListener(long partnerDeviceId) {
+        SelectedPartnerDeviceFragment fragment = new SelectedPartnerDeviceFragment();
     }
 }

@@ -25,7 +25,7 @@ import com.omnivision.dao.PrepaidCreditDaoImpl;
 import com.omnivision.dao.SimCardDaoImpl;
 import com.omnivision.utilities.AlertDialogHelper;
 import com.omnivision.utilities.CommandUtility;
-import com.omnivision.utilities.ExpandableListAdapter;
+import com.omnivision.Adapters.ExpandableListAdapter;
 import com.omnivision.utilities.IAlertDialogHelper;
 import com.omnivision.utilities.SessionManager;
 import com.omnivision.utilities.SystemValidationException;
@@ -44,7 +44,7 @@ import java.util.Map;
  * @params
  * @return
  * */
-public class PrepaidCreditFragment extends Fragment implements PartnerDeviceFragment.OnPartnerDeviceFragmentListener {
+public class PrepaidCreditFragment extends Fragment implements PartnerDeviceFragment.OnSelectedPartnerDeviceFragmentListener {
     private String TAG = PrepaidCreditFragment.class.getSimpleName();
     public static String ARG_MENU_ITEM_NUMBER = "menu_number";
     public static boolean isGroupExpanded;//used to determine if an item was selected
@@ -367,7 +367,7 @@ public class PrepaidCreditFragment extends Fragment implements PartnerDeviceFrag
     }
 
     @Override
-    public void onPartnerDeviceFragmentListener(long partnerDeviceId) {
+    public void onSelectedPartnerDeviceFragmentListener(long partnerDeviceId) {
 
     }
 }

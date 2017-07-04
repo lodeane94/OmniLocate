@@ -23,7 +23,7 @@ import com.omnivision.dao.PartnerDeviceDaoImpl;
 import com.omnivision.utilities.AlertDialogHelper;
 import com.omnivision.utilities.CommandUtility;
 import com.omnivision.utilities.IAlertDialogHelper;
-import com.omnivision.utilities.PartnerDevicesAdapter;
+import com.omnivision.Adapters.PartnerDevicesAdapter;
 import com.omnivision.utilities.SessionManager;
 import com.omnivision.utilities.SystemValidationException;
 
@@ -35,7 +35,7 @@ import java.util.List;
 public class PartnerDeviceFragment extends Fragment {
 
     long phoneId;
-    private OnPartnerDeviceFragmentListener mListener;
+    private OnSelectedPartnerDeviceFragmentListener mListener;
     private String TAG = PartnerDeviceFragment.class.getSimpleName();
    // public static String ARG_MENU_ITEM_NUMBER = "menu_number";
     private ListView partnerDeviceLv;
@@ -90,7 +90,7 @@ public class PartnerDeviceFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 PartnerDevice partnerDevice = partnerDevices.get(position);
-                mListener.onPartnerDeviceFragmentListener(partnerDevice.getId());
+                mListener.onSelectedPartnerDeviceFragmentListener(partnerDevice.getId());
             }
         });
 
@@ -155,7 +155,7 @@ public class PartnerDeviceFragment extends Fragment {
      * @return
      * */
     private void invokeSelectedPartnerDeviceFragment(long partnerDeviceId) {
-        mListener.onPartnerDeviceFragmentListener(partnerDeviceId);
+        mListener.onSelectedPartnerDeviceFragmentListener(partnerDeviceId);
     }
 
     /**
@@ -192,7 +192,7 @@ public class PartnerDeviceFragment extends Fragment {
                             if(response != null){
                                 Log.d(TAG,"partner device number : "+response);
 
-                                PartnerDevice partnerDevice = new PartnerDevice(phoneId, response, false);
+                                PartnerDevice partnerDevice = new PartnerDevice(phoneId, response, false,true);
                                 if(CommandUtility.addPartnerDevice(partnerDevice)){
                                    // refreshModel();
                                     loadPartnerDeviceNumbers();
@@ -268,8 +268,8 @@ public class PartnerDeviceFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnPartnerDeviceFragmentListener) {
-            mListener = (OnPartnerDeviceFragmentListener) context;
+        if (context instanceof OnSelectedPartnerDeviceFragmentListener) {
+            mListener = (OnSelectedPartnerDeviceFragmentListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -288,8 +288,8 @@ public class PartnerDeviceFragment extends Fragment {
      * to the activity and potentially other fragments contained in that
      * activity.
      */
-    public interface OnPartnerDeviceFragmentListener {
+    public interface OnSelectedPartnerDeviceFragmentListener {
 
-        void onPartnerDeviceFragmentListener(long partnerDeviceId);
+        void onSelectedPartnerDeviceFragmentListener(long partnerDeviceId);
     }
 }

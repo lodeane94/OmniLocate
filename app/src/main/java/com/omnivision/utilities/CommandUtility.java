@@ -223,6 +223,7 @@ public class CommandUtility {
         context.registerReceiver(commandReceiver,lockIntentFilter);
     }
 
+    //TODO set partner device to not active to disable a partner device rather than deleting it but leave option to delete it as well
     /**
      * @author lkelly
      * @desc deletes phone's partner device
