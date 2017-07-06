@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.omnivision.core.Constants;
 import com.omnivision.core.DaoSession;
 import com.omnivision.core.PartnerDevice;
+import com.omnivision.core.Phone;
 import com.omnivision.dao.IPartnerDeviceDao;
 import com.omnivision.dao.PartnerDeviceDaoImpl;
 import com.omnivision.utilities.AlertDialogHelper;
@@ -41,6 +42,7 @@ public class PartnerDeviceFragment extends Fragment {
     private ListView partnerDeviceLv;
     private PartnerDevicesAdapter partnerDeviceAdapter;
     private List<PartnerDevice> partnerDevices =  new ArrayList<>();
+    private List<PartnerDevice> partnerDevicesCopy =  new ArrayList<>();//used for displaying purposes
 
     private HashMap<String,String> userDetails;
     private DaoSession daoSession;
@@ -83,7 +85,7 @@ public class PartnerDeviceFragment extends Fragment {
 
         /*initializing views*/
         View rootView = inflater.inflate(R.layout.fragment_partner_device,container,false);
-        partnerDeviceAdapter = new PartnerDevicesAdapter(context, R.layout.partner_devices_view, partnerDevices);
+        partnerDeviceAdapter = new PartnerDevicesAdapter(context, R.layout.partner_devices_view, partnerDevicesCopy);
         partnerDeviceLv = (ListView) rootView.findViewById(R.id.partner_device_fragment_lv);
         partnerDeviceLv.setAdapter(partnerDeviceAdapter);
         partnerDeviceLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -194,7 +196,7 @@ public class PartnerDeviceFragment extends Fragment {
 
                                 PartnerDevice partnerDevice = new PartnerDevice(phoneId, response, false,true);
                                 if(CommandUtility.addPartnerDevice(partnerDevice)){
-                                   // refreshModel();
+                                    refreshModel();
                                     loadPartnerDeviceNumbers();
                                     partnerDeviceAdapter.notifyDataSetChanged();
                                     Toast.makeText(context, "Partner device added", Toast.LENGTH_LONG).show();
@@ -227,11 +229,12 @@ public class PartnerDeviceFragment extends Fragment {
      * @desc refreshes data models used
      * @params
      * @return
-     *
+     **/
     private void refreshModel(){
-        simCard.resetPrepaidCredit();
+        Phone phone = OmniLocateApplication.getPhoneInstance();
+        phone.resetPartnerDevicesNums();
         Log.d(TAG,"models refreshed");
-    }*/
+    }
 
     /**
      * @author lkelly
@@ -251,15 +254,16 @@ public class PartnerDeviceFragment extends Fragment {
      * */
     private void loadPartnerDeviceNumbers() {
         Log.d(TAG,"loadPartnerDeviceNumbers : init");
-        //clear list before reloading data on the screen
-        partnerDevices.clear();
+
         phoneId = Long.parseLong(userDetails.get(Constants.SessionManager.PHONE_ID));
         partnerDevices = partnerDeviceDao.findAllByOwnerId(phoneId);
 
+        partnerDevicesCopy.clear();
+        partnerDevicesCopy.addAll(partnerDevices);
+
         //throw exception if simcard is null at this point
-        if (partnerDevices == null){
+        if (partnerDevices != null && partnerDevices.size() == 0){
             Toast.makeText(context,"No partner devices found",Toast.LENGTH_LONG).show();
-            throw new NullPointerException("partner devices list is null");
         }
 
         Log.d(TAG,"loadPartnerDeviceNumbers : exit");

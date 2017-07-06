@@ -13,14 +13,13 @@ import org.greenrobot.greendao.annotation.NotNull;
 @Entity
 public class CommandHistory {
     @Id
-    private long id;
-    private long phoneId;
+    private Long id;
+    private Long phoneId;
     @ToOne(joinProperty = "phoneId")
     private Phone phone;
     private String cmd;
     private String dateIssued;
     private String issuedBy;
-    //TODO add referencial constraints for the partner devices
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
@@ -30,6 +29,7 @@ public class CommandHistory {
     @Generated(hash = 457073469)
     private transient Long phone__resolvedKey;
 
+
     public CommandHistory(long phoneId, String cmd, String dateIssued, String issuedBy) {
         this.phoneId = phoneId;
         this.cmd = cmd;
@@ -37,8 +37,8 @@ public class CommandHistory {
         this.issuedBy = issuedBy;
     }
 
-    @Generated(hash = 853884199)
-    public CommandHistory(long id, long phoneId, String cmd, String dateIssued,
+    @Generated(hash = 724470204)
+    public CommandHistory(Long id, Long phoneId, String cmd, String dateIssued,
             String issuedBy) {
         this.id = id;
         this.phoneId = phoneId;
@@ -49,14 +49,6 @@ public class CommandHistory {
 
     @Generated(hash = 676261819)
     public CommandHistory() {
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public long getPhoneId() {
@@ -91,10 +83,18 @@ public class CommandHistory {
         this.issuedBy = issuedBy;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setPhoneId(Long phoneId) {
+        this.phoneId = phoneId;
+    }
+
     /** To-one relationship, resolved on first access. */
-    @Generated(hash = 398581896)
+    @Generated(hash = 2078921422)
     public Phone getPhone() {
-        long __key = this.phoneId;
+        Long __key = this.phoneId;
         if (phone__resolvedKey == null || !phone__resolvedKey.equals(__key)) {
             final DaoSession daoSession = this.daoSession;
             if (daoSession == null) {
@@ -111,15 +111,11 @@ public class CommandHistory {
     }
 
     /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1952452884)
-    public void setPhone(@NotNull Phone phone) {
-        if (phone == null) {
-            throw new DaoException(
-                    "To-one property 'phoneId' has not-null constraint; cannot set to-one to null");
-        }
+    @Generated(hash = 1187165439)
+    public void setPhone(Phone phone) {
         synchronized (this) {
             this.phone = phone;
-            phoneId = phone.getId();
+            phoneId = phone == null ? null : phone.getId();
             phone__resolvedKey = phoneId;
         }
     }
@@ -160,10 +156,15 @@ public class CommandHistory {
         myDao.update(this);
     }
 
+    public Long getId() {
+        return this.id;
+    }
+
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 374077705)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getCommandHistoryDao() : null;
     }
+
 }

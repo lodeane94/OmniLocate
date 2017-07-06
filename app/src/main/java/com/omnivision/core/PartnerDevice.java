@@ -19,7 +19,7 @@ public class PartnerDevice implements IPartnerDevice {
     private Phone phone;
     private Boolean isPrimaryFlag;
     private Boolean isActive;
-    @Unique
+    //@Unique
     private String partnerDeviceNum;
     /** Used to resolve relations */
     @Generated(hash = 2040040024)

@@ -1,6 +1,5 @@
 package com.omnivision.Adapters;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,7 +10,6 @@ import android.widget.TextView;
 import com.omnivision.core.CommandHistory;
 import com.tablayoutexample.lkelly.omnivision.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,7 +55,7 @@ public class CmdHistoryRecyclerViewAdapter extends RecyclerView.Adapter<CmdHisto
         public void onItemClick(int position, View v);
     }
 
-    public static class DataObjectHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public static class DataObjectHolder extends RecyclerView.ViewHolder{
 
         private TextView cmdName;
         private TextView dateIssued;
@@ -69,12 +67,6 @@ public class CmdHistoryRecyclerViewAdapter extends RecyclerView.Adapter<CmdHisto
             dateIssued = (TextView) itemView.findViewById(R.id.cmd_date_issued_tv);
             issuedBy = (TextView) itemView.findViewById(R.id.cmd_issued_by_tv);
             Log.i(TAG,"Adding listener");
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            cmdHistoryRecyclerClickListener.onItemClick(getAdapterPosition(),v);
         }
     }
 }

@@ -18,6 +18,5 @@ public interface IPhone {
     String getCountry();
     String getCellNum();
     String getDeviceStatus();
-    List<PartnerDevice> getPartnerDevicesNumbers();
     Boolean validateCellNum();
 }

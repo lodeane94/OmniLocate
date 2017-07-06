@@ -1,7 +1,6 @@
 package com.omnivision.dao;
 
 import com.omnivision.core.CommandHistory;
-import com.omnivision.core.SimCardChangeHistory;
 
 import org.greenrobot.greendao.query.QueryBuilder;
 

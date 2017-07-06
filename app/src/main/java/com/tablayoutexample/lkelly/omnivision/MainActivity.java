@@ -294,6 +294,7 @@ public class MainActivity extends AppCompatActivity implements PartnerDeviceFrag
                 onPrepaidCreditSelection(position);
                 break;
             case Constants.Navigation.NavigationPositions.COMMAND_HISTORY:
+                onCommandHistorySelection(position);
                 break;
         }
     }
@@ -306,12 +307,32 @@ public class MainActivity extends AppCompatActivity implements PartnerDeviceFrag
      * */
     private void swapFragment(Fragment fragment, int position){
         android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame,fragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.content_frame,fragment)
+                .addToBackStack(fragment.getTag())
+                .commit();
 
+        getSupportFragmentManager().addOnBackStackChangedListener(
+                new android.support.v4.app.FragmentManager.OnBackStackChangedListener() {
+                    public void onBackStackChanged() {
+                        int i = 0;
+                    }
+                });
         //update selected item and title, then close the drawer
         mDrawerListView.setItemChecked(position, true);
         mTitle = mDrawerTitle = mDrawerTitles[position];
         mDrawerLayout.closeDrawer(mNavigationPaneLayout);
+    }
+
+    /**
+     * @author lkelly
+     * @desc swaps CommandHistory in the main content view of the application
+     * @params
+     * @return
+     * */
+    private void onCommandHistorySelection(int position) {
+        CommandHistoryFragment.ARG_NAVIGATION_POSITION = position;
+        CommandHistoryFragment fragment = new CommandHistoryFragment();
+        swapFragment(fragment,position);
     }
 
     /**
@@ -357,17 +378,19 @@ public class MainActivity extends AppCompatActivity implements PartnerDeviceFrag
     /**
      * @author lkelly
      * @desc method is called when an item is selected on the PartnerDeviceFragment
-     *       it will swap the SelectedPartnerDeviceFragment into the frame layout
+     *       it will swap the CommandHistoryFragment into the frame layout
      * @params partnerDeviceNum
      * @return
      * */
     @Override
     public void onSelectedPartnerDeviceFragmentListener(String partnerDeviceNum) {
-        SelectedPartnerDeviceFragment fragment = new SelectedPartnerDeviceFragment();
-        SelectedPartnerDeviceFragment.ARG_PARTNER_DEVICE_NUMBER = partnerDeviceNum;
-
         //keep navigation drawer at the partner devices position
         int partnerDevicePosition = Constants.Navigation.NavigationPositions.PARTNER_DEVICES;
+        CommandHistoryFragment fragment = new CommandHistoryFragment();
+        CommandHistoryFragment.ARG_PARTNER_DEVICE_NUMBER = partnerDeviceNum;
+        CommandHistoryFragment.ARG_NAVIGATION_POSITION = partnerDevicePosition;
+
+
         swapFragment(fragment,partnerDevicePosition);
     }
 }

@@ -249,9 +249,9 @@ public class LoginActivity extends AppCompatActivity {
         Log.d(TAG,"launchMainActivity : init");
         Intent mainIntent = new Intent(this,MainActivity.class);
         // Closing all the Activities
-        mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+       // mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         // Add new Flag to start new Activity
-        mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+     //   mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Log.d(TAG,"launchMainActivity : exit");
         startActivity(mainIntent);
     }

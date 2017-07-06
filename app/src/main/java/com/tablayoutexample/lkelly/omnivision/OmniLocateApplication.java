@@ -33,7 +33,6 @@ public class OmniLocateApplication extends Application {
         super.onCreate();
         _instance = this;
         sessionManager = new SessionManager(this);
-        userDetails = sessionManager.getUserDetails();
     }
 
     public static OmniLocateApplication getInstance(){
@@ -48,6 +47,7 @@ public class OmniLocateApplication extends Application {
      * @return
      * */
     public static Phone getPhoneInstance() {
+        userDetails = sessionManager.getUserDetails();
         /*implementing the Phone object singleton within the application*/
         if(_phoneInstance != null) {
             return _phoneInstance;

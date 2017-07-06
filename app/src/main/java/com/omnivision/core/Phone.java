@@ -24,12 +24,12 @@ public class Phone implements IPhone {
     private String cellNum;
     private String country;
     private String deviceStatus;
-    @ToMany(referencedJoinProperty = "id")
-    private List<PartnerDevice> partnerDevicesNums = new ArrayList<PartnerDevice>();
     @ToMany(referencedJoinProperty = "phoneId")
-    private List<SimCardChangeHistory> simCardChangeHistories = new ArrayList<SimCardChangeHistory>();
+    private List<PartnerDevice> partnerDevicesNums;
     @ToMany(referencedJoinProperty = "phoneId")
-    private List<CommandHistory> commandHistories = new ArrayList<CommandHistory>();
+    private List<SimCardChangeHistory> simCardChangeHistories;
+    @ToMany(referencedJoinProperty = "phoneId")
+    private List<CommandHistory> commandHistories;
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
@@ -51,6 +51,14 @@ public class Phone implements IPhone {
         this.partnerDevicesNums = partnerDevicesNums;
     }
 
+
+
+    @Generated(hash = 429398894)
+    public Phone() {
+    }
+
+
+
     @Generated(hash = 1271786037)
     public Phone(Long id, Long userId, String cellNum, String country, String deviceStatus) {
         this.id = id;
@@ -58,10 +66,6 @@ public class Phone implements IPhone {
         this.cellNum = cellNum;
         this.country = country;
         this.deviceStatus = deviceStatus;
-    }
-
-    @Generated(hash = 429398894)
-    public Phone() {
     }
 
     @Override
@@ -119,11 +123,6 @@ public class Phone implements IPhone {
         this.partnerDevicesNums = partnerDevicesNums;
     }
 
-    @Override
-    public List<PartnerDevice> getPartnerDevicesNumbers(){
-        return this.partnerDevicesNums;
-    }
-
     public void setSimCards(List<SimCard> simCards) {
         this.simCards = simCards;
     }
@@ -141,6 +140,54 @@ public class Phone implements IPhone {
     public Boolean validateCellNum() {
         return true;//TODO create funnctionality to validate numbers
     }
+
+
+
+    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+    @Generated(hash = 85296983)
+    public synchronized void resetPartnerDevicesNums() {
+        partnerDevicesNums = null;
+    }
+
+
+    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+    @Generated(hash = 1265663133)
+    public synchronized void resetSimCards() {
+        simCards = null;
+    }
+
+
+    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+    @Generated(hash = 937043647)
+    public synchronized void resetSimCardChangeHistories() {
+        simCardChangeHistories = null;
+    }
+
+
+
+    /**
+     * To-many relationship, resolved on first access (and after reset).
+     * Changes to to-many relations are not persisted, make changes to the target entity.
+     */
+    @Generated(hash = 143049516)
+    public List<SimCard> getSimCards() {
+        if (simCards == null) {
+            final DaoSession daoSession = this.daoSession;
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            SimCardDao targetDao = daoSession.getSimCardDao();
+            List<SimCard> simCardsNew = targetDao._queryPhone_SimCards(id);
+            synchronized (this) {
+                if (simCards == null) {
+                    simCards = simCardsNew;
+                }
+            }
+        }
+        return simCards;
+    }
+
+
 
     /**
      * To-many relationship, resolved on first access (and after reset).
@@ -164,72 +211,7 @@ public class Phone implements IPhone {
         return partnerDevicesNums;
     }
 
-    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
-    @Generated(hash = 85296983)
-    public synchronized void resetPartnerDevicesNums() {
-        partnerDevicesNums = null;
-    }
 
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 128553479)
-    public void delete() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.delete(this);
-    }
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 1942392019)
-    public void refresh() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.refresh(this);
-    }
-    /**
-     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
-     * Entity must attached to an entity context.
-     */
-    @Generated(hash = 713229351)
-    public void update() {
-        if (myDao == null) {
-            throw new DaoException("Entity is detached from DAO context");
-        }
-        myDao.update(this);
-    }
-    /**
-     * To-many relationship, resolved on first access (and after reset).
-     * Changes to to-many relations are not persisted, make changes to the target entity.
-     */
-    @Generated(hash = 143049516)
-    public List<SimCard> getSimCards() {
-        if (simCards == null) {
-            final DaoSession daoSession = this.daoSession;
-            if (daoSession == null) {
-                throw new DaoException("Entity is detached from DAO context");
-            }
-            SimCardDao targetDao = daoSession.getSimCardDao();
-            List<SimCard> simCardsNew = targetDao._queryPhone_SimCards(id);
-            synchronized (this) {
-                if (simCards == null) {
-                    simCards = simCardsNew;
-                }
-            }
-        }
-        return simCards;
-    }
-
-    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
-    @Generated(hash = 1265663133)
-    public synchronized void resetSimCards() {
-        simCards = null;
-    }
 
     /**
      * To-many relationship, resolved on first access (and after reset).
@@ -254,11 +236,49 @@ public class Phone implements IPhone {
         return simCardChangeHistories;
     }
 
-    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
-    @Generated(hash = 937043647)
-    public synchronized void resetSimCardChangeHistories() {
-        simCardChangeHistories = null;
+
+
+    /**
+     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
+     * Entity must attached to an entity context.
+     */
+    @Generated(hash = 128553479)
+    public void delete() {
+        if (myDao == null) {
+            throw new DaoException("Entity is detached from DAO context");
+        }
+        myDao.delete(this);
     }
+
+
+
+    /**
+     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
+     * Entity must attached to an entity context.
+     */
+    @Generated(hash = 1942392019)
+    public void refresh() {
+        if (myDao == null) {
+            throw new DaoException("Entity is detached from DAO context");
+        }
+        myDao.refresh(this);
+    }
+
+
+
+    /**
+     * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
+     * Entity must attached to an entity context.
+     */
+    @Generated(hash = 713229351)
+    public void update() {
+        if (myDao == null) {
+            throw new DaoException("Entity is detached from DAO context");
+        }
+        myDao.update(this);
+    }
+
+
 
     /**
      * To-many relationship, resolved on first access (and after reset).
@@ -282,11 +302,15 @@ public class Phone implements IPhone {
         return commandHistories;
     }
 
+
+
     /** Resets a to-many relationship, making the next get call to query for a fresh result. */
     @Generated(hash = 575381629)
     public synchronized void resetCommandHistories() {
         commandHistories = null;
     }
+
+
 
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 663553079)
@@ -294,6 +318,8 @@ public class Phone implements IPhone {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getPhoneDao() : null;
     }
+
+
 
 
 }

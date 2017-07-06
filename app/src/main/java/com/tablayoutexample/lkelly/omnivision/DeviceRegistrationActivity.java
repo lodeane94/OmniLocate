@@ -18,8 +18,11 @@ import com.omnivision.core.Constants;
 import com.omnivision.core.Country;
 import com.omnivision.core.DaoSession;
 import com.omnivision.core.PartnerDevice;
+import com.omnivision.core.PartnerDeviceDao;
 import com.omnivision.core.Phone;
+import com.omnivision.core.PhoneDao;
 import com.omnivision.core.SimCard;
+import com.omnivision.core.SimCardDao;
 import com.omnivision.core.SimNetwork;
 import com.omnivision.core.User;
 import com.omnivision.core.UserDao;
@@ -82,6 +85,8 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
         simNetworkDao = new SimNetworkDaoImpl(daoSession);
         partnerDeviceDao = new PartnerDeviceDaoImpl(daoSession);
 
+        PhoneDao.dropTable(daoSession.getPhoneDao().getDatabase(),true);
+        PhoneDao.createTable(daoSession.getPhoneDao().getDatabase(),true);
         //activity view initialization
         initializeCountrySpinner();
         initializeSimNetworkProviderSpinner();

@@ -41,7 +41,7 @@ public class PartnerDeviceDaoImpl implements IPartnerDeviceDao {
 
     @Override
     public List<PartnerDevice> findAllByOwnerId(Long ownerId) {
-        return daoSession.getPhoneDao().load(ownerId).getPartnerDevicesNumbers();
+        return daoSession.getPhoneDao().load(ownerId).getPartnerDevicesNums();
     }
 
     @Override

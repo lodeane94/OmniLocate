@@ -2,11 +2,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.tablayoutexample.lkelly.omnivision.SelectedPartnerDeviceFragment">
+    android:background="@color/cardview_shadow_start_color"
+    tools:context="com.tablayoutexample.lkelly.omnivision.CommandHistoryFragment">
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" android:scrollbars="vertical"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
         android:id="@+id/cmd_history_rv"/>
 
 </LinearLayout>

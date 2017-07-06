@@ -18,6 +18,14 @@ public class  DbHelper  {
     private static DaoSession _session = null;
     private static final String _dbname = "OmniLocate";
 
+    public static String get_dbname() {
+        return _dbname;
+    }
+
+    public static SQLiteDatabase get_db() {
+        return _db;
+    }
+
     public DaoSession getSession(Context context){
         if(_session == null){
             _session = getMaster(context).newSession();
