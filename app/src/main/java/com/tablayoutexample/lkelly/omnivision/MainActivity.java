@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements PartnerDeviceFrag
     private SessionManager sessionManager;
     private HashMap<String,String> userDetails;
 
-
+    private View.OnClickListener originalToolbarListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +67,17 @@ public class MainActivity extends AppCompatActivity implements PartnerDeviceFrag
 
         initializeDrawerLayout(savedInstanceState);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+      /*  if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        }*/
+
+        mainToolBar.setNavigationIcon(R.drawable.ic_action_back);
+
+        originalToolbarListener = mDrawerToggle.getToolbarNavigationClickListener();
+
+
         selectItem(Constants.Navigation.NavigationPositions.HOME);//selecting the HOME position from the navigation drawer
 
        // if(PermissionManager.hasPermission(MainActivity.this,Manifest.permission.RECEIVE_SMS)
@@ -189,6 +198,7 @@ public class MainActivity extends AppCompatActivity implements PartnerDeviceFrag
                 invalidateOptionsMenu();//creates call to onPrepareOptionsMenu()
             }
         };
+        mDrawerToggle.syncState();
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         if(savedInstanceState == null){
@@ -311,12 +321,32 @@ public class MainActivity extends AppCompatActivity implements PartnerDeviceFrag
                 .addToBackStack(fragment.getTag())
                 .commit();
 
-        getSupportFragmentManager().addOnBackStackChangedListener(
-                new android.support.v4.app.FragmentManager.OnBackStackChangedListener() {
-                    public void onBackStackChanged() {
-                        int i = 0;
+        getSupportFragmentManager().addOnBackStackChangedListener(new android.support.v4.app.FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    mDrawerToggle.setDrawerIndicatorEnabled(false);
+                    if(getSupportActionBar()!=null)
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                    mDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            getSupportFragmentManager().popBackStack();
+                        }
+                    });
+                } else {
+                    mDrawerToggle.setDrawerIndicatorEnabled(true);
+                    if(getSupportActionBar()!=null){
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                        getSupportActionBar().setDisplayShowHomeEnabled(true);
                     }
-                });
+                    selectItem(Constants.Navigation.NavigationPositions.HOME);
+                    mDrawerToggle.setToolbarNavigationClickListener(originalToolbarListener);
+                }
+            }
+        });
+
+
         //update selected item and title, then close the drawer
         mDrawerListView.setItemChecked(position, true);
         mTitle = mDrawerTitle = mDrawerTitles[position];

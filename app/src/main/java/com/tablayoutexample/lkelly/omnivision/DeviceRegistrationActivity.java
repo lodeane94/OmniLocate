@@ -85,8 +85,8 @@ public class DeviceRegistrationActivity extends AppCompatActivity {
         simNetworkDao = new SimNetworkDaoImpl(daoSession);
         partnerDeviceDao = new PartnerDeviceDaoImpl(daoSession);
 
-        PhoneDao.dropTable(daoSession.getPhoneDao().getDatabase(),true);
-        PhoneDao.createTable(daoSession.getPhoneDao().getDatabase(),true);
+        PartnerDeviceDao.dropTable(daoSession.getPartnerDeviceDao().getDatabase(),true);
+        PartnerDeviceDao.createTable(daoSession.getPartnerDeviceDao().getDatabase(),true);
         //activity view initialization
         initializeCountrySpinner();
         initializeSimNetworkProviderSpinner();
