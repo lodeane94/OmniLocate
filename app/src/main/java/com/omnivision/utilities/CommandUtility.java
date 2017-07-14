@@ -242,6 +242,12 @@ public class CommandUtility {
      * */
     public static boolean makePartnerDevicePrimary(PartnerDevice partnerDevice) {
         if(!partnerDevice.getIsPrimaryFlag()){
+            Phone phone = OmniLocateApplication.getPhoneInstance();
+            /*first disabling the original primary partner device */
+            PartnerDevice primaryPartnerDevice = partnerDeviceDao.findPrimaryDevice(phone.getId());
+            primaryPartnerDevice.setIsPrimaryFlag(false);
+            partnerDeviceDao.update(primaryPartnerDevice);
+            //updating partner device as primary
             partnerDevice.setIsPrimaryFlag(true);
             partnerDeviceDao.update(partnerDevice);
             return true;
@@ -260,7 +266,7 @@ public class CommandUtility {
         int partnerDeviceCount = phone.getPartnerDevicesNums().size();
 
         //phone should not have more than 3 partner devices
-        if(partnerDeviceCount != Constants.Constraints.MAX_PARTNER_DEVICE){
+        if(partnerDeviceCount <= Constants.Constraints.MAX_PARTNER_DEVICE){
             partnerDeviceDao.insert(partnerDevice);
             return true;
         }

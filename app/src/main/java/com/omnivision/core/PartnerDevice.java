@@ -21,6 +21,7 @@ public class PartnerDevice implements IPartnerDevice {
     private Boolean isActive;
     //@Unique
     private String partnerDeviceNum;
+    private String alias;
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;

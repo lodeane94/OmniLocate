@@ -10,12 +10,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.omnivision.Adapters.CmdHistoryRecyclerViewAdapter;
 import com.omnivision.core.CommandHistory;
 import com.omnivision.core.Constants;
 import com.omnivision.core.DaoSession;
+import com.omnivision.core.Phone;
 import com.omnivision.dao.CommandHistoryDaoImpl;
 import com.omnivision.dao.ICommandHistoryDao;
 import com.omnivision.utilities.SessionManager;
@@ -39,6 +41,8 @@ public class CommandHistoryFragment extends Fragment {
 
     private ICommandHistoryDao commandHistoryDao;
     private Context context;
+
+    private TextView partnerDeviceJumbotron;
 
     public CommandHistoryFragment() {
         // Required empty public constructor
@@ -70,12 +74,22 @@ public class CommandHistoryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = null;
+        List<CommandHistory> commandHistoriesByIssuer;
         try {
             // Inflate the layout for this fragment
             rootView = inflater.inflate(R.layout.fragment_selected_partner_device, container, false);
-            List<CommandHistory> commandHistoriesByIssuer = commandHistoryDao.getAllByCmdIssuer(ARG_PARTNER_DEVICE_NUMBER);
-            if(ARG_NAVIGATION_POSITION == Constants.Navigation.NavigationPositions.PARTNER_DEVICES)
-                //TODO display partner device information i.e. initialize textview
+
+            if(ARG_NAVIGATION_POSITION == Constants.Navigation.NavigationPositions.PARTNER_DEVICES){
+                commandHistoriesByIssuer = commandHistoryDao.getAllByCmdIssuer(ARG_PARTNER_DEVICE_NUMBER);
+
+                //display jumbotron highligting the partner device's number and alias
+                partnerDeviceJumbotron = (TextView) rootView.findViewById(R.id.partner_device_jumbotron);
+                partnerDeviceJumbotron.setText(ARG_PARTNER_DEVICE_NUMBER);
+                partnerDeviceJumbotron.setVisibility(View.VISIBLE);
+            }else{
+                Phone phone = OmniLocateApplication.getPhoneInstance();
+                commandHistoriesByIssuer = commandHistoryDao.findAllByOwnerId(phone.getId());
+            }
 
             mRecyclerView = (RecyclerView) rootView.findViewById(R.id.cmd_history_rv);
             mLayoutManager = new LinearLayoutManager(context);

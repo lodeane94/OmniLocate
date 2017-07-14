@@ -2,8 +2,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@color/cardview_shadow_start_color"
+    android:padding="@dimen/default_layout_padding"
     tools:context="com.tablayoutexample.lkelly.omnivision.CommandHistoryFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/defaultEditTextStyle"
+        android:visibility="gone"
+        android:id="@+id/partner_device_jumbotron"/><!-- TODO create jumbotron style for this heading element-->
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"

@@ -17,5 +17,6 @@
     <dimen name="fragment_item_margin_right">10dp</dimen>
     <dimen name="fragment_horizontal_margin">16dp</dimen>
     <dimen name="fragment_vertical_margin">16dp</dimen>
+    <dimen name="default_layout_padding">4dp</dimen>
 
 </resources>

@@ -66,8 +66,8 @@ public class MainActivity extends AppCompatActivity implements PartnerDeviceFrag
         setSupportActionBar(mainToolBar);
 
         initializeDrawerLayout(savedInstanceState);
-
-      /*  if(getSupportActionBar() != null) {
+/*
+        if(getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
@@ -337,11 +337,11 @@ public class MainActivity extends AppCompatActivity implements PartnerDeviceFrag
                 } else {
                     mDrawerToggle.setDrawerIndicatorEnabled(true);
                     if(getSupportActionBar()!=null){
-                        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                         getSupportActionBar().setDisplayShowHomeEnabled(true);
                     }
                     selectItem(Constants.Navigation.NavigationPositions.HOME);
-                    mDrawerToggle.setToolbarNavigationClickListener(originalToolbarListener);
+                    //mDrawerToggle.setToolbarNavigationClickListener(originalToolbarListener);
                 }
             }
         });
