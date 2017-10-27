@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<account-authenticator
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accountType="localhost:54741"
+    android:icon="@drawable/ic_action_phone"
+    android:smallIcon="@drawable/ic_action_phone"
+    android:label="@string/app_name">
+
+</account-authenticator>

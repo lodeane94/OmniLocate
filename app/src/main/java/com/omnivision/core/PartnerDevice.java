@@ -39,14 +39,15 @@ public class PartnerDevice implements IPartnerDevice {
         this.isActive = isActive;
     }
 
-    @Generated(hash = 1352568409)
-    public PartnerDevice(Long id, Long phoneId, Boolean isPrimaryFlag, Boolean isActive,
-            String partnerDeviceNum) {
+    @Generated(hash = 1571202525)
+    public PartnerDevice(Long id, Long phoneId, Boolean isPrimaryFlag, Boolean isActive, String partnerDeviceNum,
+            String alias) {
         this.id = id;
         this.phoneId = phoneId;
         this.isPrimaryFlag = isPrimaryFlag;
         this.isActive = isActive;
         this.partnerDeviceNum = partnerDeviceNum;
+        this.alias = alias;
     }
 
     @Generated(hash = 121553696)
@@ -174,6 +175,14 @@ public class PartnerDevice implements IPartnerDevice {
 
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public String getAlias() {
+        return this.alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
     /** called by internal mechanisms, do not call yourself. */
